@@ -1,7 +1,7 @@
-import readline from 'readline';
-import fs from 'fs';
-import CustomError from './CustomError.js'
-import domainName from './consts.js'
+const readline = require('readline');
+const fs = require('fs');
+const { CustomError } = require('./CustomError.js')
+const { domainName } = require('./consts.js')
 
 const readJsonFile = (filePath) => {
     return new Promise((resolve, reject) => {
@@ -25,7 +25,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-const input = (question) => {
+const input = async (question) => {
     return new Promise((resolve) => {
         rl.question(question, (answer) => {
             resolve(answer);
@@ -79,7 +79,7 @@ const initTable = async (node) => {
     return [table, neighbors]
 }
 
-export {
+module.exports = {
     readJsonFile,
     input,
     verifyName,

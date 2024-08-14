@@ -1,3 +1,3 @@
 const domainName = "alumchat.lol"
 
-export default domainName;
+module.exports = {domainName};

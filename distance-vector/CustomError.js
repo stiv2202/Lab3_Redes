@@ -1,8 +1,8 @@
 class CustomError extends Error {
     constructor(message) {
         super(message);
-        this.name = 'CustomError'; // Set the name of the error
+        this.name = 'CustomError';
     }
 }
 
-export default CustomError;
+module.exports = { CustomError };

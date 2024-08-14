@@ -1,80 +1,75 @@
-import { client, xml } from '@xmpp/client';
-import debug from '@xmpp/debug';
-import domainName from './consts.js';
+const { JSDOM } = require('jsdom');
+const { Strophe, $msg, $pres } = require('strophe.js');
+const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
+const DOMAIN_NAME = 'alumchat.lol';
+const USERNAME = 'gue21781-user';
+const PASSWORD = 'lizamiranda';
+const RESOURCE = '';
 
-const xmpp = client({
-  service: 'ws://alumchat.lol:7070/ws',
-  domain: 'alumchat.lol',
-  resource: 'example',
-  username: 'gue21781-user',
-  password: 'lizamiranda',
-});
+const { window } = new JSDOM('');
+global.document = window.document;
+global.window = window;
 
-debug(xmpp, true);
+const connection = new Strophe.Connection(XMPP_SERVER);
 
-xmpp.on('error', (err) => {
-  console.error('Error:', err);
-});
+const login = () => {
+  connection.connect(`${USERNAME}@${DOMAIN_NAME}/${RESOURCE}`, PASSWORD, (status) => {
+    switch (status) {
+      case Strophe.Status.CONNECTED:
+        console.log(`Conectado exitosamente como ${USERNAME}@${DOMAIN_NAME}/${RESOURCE}`);
+        connection.addHandler(onMessage, null, 'message', 'chat', null);
+        sendPresence();
+        break;
+      case Strophe.Status.DISCONNECTED:
+        console.log('Desconectado del servidor XMPP.');
+        break;
+      case Strophe.Status.CONNFAIL:
+        console.error('Falló la conexión al servidor XMPP.');
+        break;
+      case Strophe.Status.AUTHFAIL:
+        console.error('Falló la autenticación.');
+        break;
+      default:
+        console.log(`Estado de conexión: ${status}`);
+        break;
+    }
+  });
+}
 
-xmpp.on('offline', () => {
-  console.log('Offline');
-});
-
-xmpp.on('stanza', async (stanza) => {
-  if (stanza.is('message') && stanza.getChild('body')) {
-    console.log('Received message:', stanza.getChildText('body'));
+const onMessage = (message) => {
+  const from = message.getAttribute('from');
+  const bodyElement = message.getElementsByTagName('body')[0];
+  if (bodyElement) {
+    const body = Strophe.getText(bodyElement);
+    console.log(`Mensaje recibido de ${from}: ${body}`);
   }
-});
 
-xmpp.on('online', async (address) => {
-  console.log(`Online as ${address}`);
-});
-
-async function startServer() {
-  try {
-    await xmpp.start();
-    console.log('XMPP client started');
-  } catch (err) {
-    console.error('Failed to start XMPP client:', err);
-  }
+  return true;
 }
 
-async function sendMessage(to, body) {
-  try {
-    const message = xml(
-      'message',
-      { type: 'chat', to },
-  xml('body', {}, body)
-    );
-  await xmpp.send(message);
-  console.log(`Message sent to ${to}`);
-} catch (err) {
-  console.error('Failed to send message:', err);
-}
+const sendMessage = (to, boddy) => {
+  const message = $msg({
+    to,
+    from: `${USERNAME}@${DOMAIN_NAME}`,
+    type: 'chat'
+  }).c('body').t(boddy);
+
+  connection.send(message);
 }
 
-async function stopServer() {
-  try {
-    await xmpp.send(xml('presence', { type: 'unavailable' }));
-    await xmpp.stop();
-    console.log('XMPP client stopped');
-  } catch (err) {
-    console.error('Failed to stop XMPP client:', err);
-  }
+const sendPresence = () => {
+  const presence = $pres({
+    type: 'available'
+  });
+  connection.send(presence);
 }
 
-// (async () => {
-//   await startServer();
+// setTimeout(() => {
+//   console.log('Desconectando...');
+//   connection.disconnect();
+// }, 50000);
 
-//   // Optional: Send a message after starting the server
-//   await sendMessage('gue21781-test@alumchat.lol/example', 'hello world');
-
-//   // Optional: Uncomment to test stopping the server after 5 seconds
-//   // setTimeout(stopServer, 5000);
-// })();
-
-export {
-  startServer,
-  stopServer,
-  sendMessage,
+module.exports = {
+  login,
+  sendMessage
 }
