@@ -4,7 +4,7 @@ const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
 const DOMAIN_NAME = 'alumchat.lol';
 const USERNAME = 'gue21781-user';
 const PASSWORD = 'lizamiranda';
-const RESOURCE = '';
+const RESOURCE = 'distance-vector';
 
 const { window } = new JSDOM('');
 global.document = window.document;
@@ -41,6 +41,9 @@ const onMessage = (message) => {
   const bodyElement = message.getElementsByTagName('body')[0];
   if (bodyElement) {
     const body = Strophe.getText(bodyElement);
+
+
+
     console.log(`Mensaje recibido de ${from}: ${body}`);
   }
 
@@ -48,9 +51,12 @@ const onMessage = (message) => {
 }
 
 const sendMessage = (to, boddy) => {
+  let from = `${USERNAME}@${DOMAIN_NAME}`
+  to = `${to}${RESOURCE.trim() != '' ?  `/${RESOURCE}` : '' }`
+  from = `${from}${RESOURCE.trim() != '' ?  `/${RESOURCE}` : '' }`
   const message = $msg({
     to,
-    from: `${USERNAME}@${DOMAIN_NAME}`,
+    from,
     type: 'chat'
   }).c('body').t(boddy);
 

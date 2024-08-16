@@ -18,6 +18,7 @@ const main = async () => {
 
     login()
     setInterval(() => {
+        console.log("Enviando vecinos...")
         neighbors.forEach(n => {
 
             let message = {
@@ -28,10 +29,9 @@ const main = async () => {
                 "payload": table
             }
 
-            console.log("Enviando vecinos...")
             sendMessage(names[n], JSON.stringify(message));
         });
-    }, 30000);
+    }, 3000);
 
 }
 
