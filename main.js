@@ -5,6 +5,7 @@ const { ALGORITHM } = require('./consts.js')
 let { updateNode } = require('./enviroment.js')
 const { distanceVectorSend } = require('./distance-vector')
 const { dijkstraSend } = require('./dijkstra/index.js')
+const { linkStateSend } = require('./link-state')
 
 const main = async () => {
     const [name, node] = await startNode()
@@ -19,7 +20,7 @@ const main = async () => {
         id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
         type: "info",
         from: `${name}@alumchat.lol`,
-        to: "kie21581-test@alumchat.lol",
+        to: "zam21780-react1@alumchat.lol",
         hops: 3,
         payload: `${name} says hello!`
     }
@@ -46,6 +47,12 @@ const main = async () => {
             setTimeout(() => {
                 console.log("Enviando mensaje con dijkstra...")
                 dijkstraSend(message)
+            }, 5000)
+            break;
+        case 'link-state':
+            setTimeout(() => {
+                console.log("Enviando mensaje con link-state...")
+                linkStateSend(message)
             }, 5000)
             break;
         default:
