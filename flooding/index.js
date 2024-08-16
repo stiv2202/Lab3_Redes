@@ -1,25 +1,28 @@
 const { initTable, input, readJsonFile, verifyName } = require('../utils.js')
 const { sendMessage } = require('../server.js');
 
-const flooding = async (name, messageBody) => {
+const flooding = async (name, node, names, message) => {
 
-    const names = (await readJsonFile("names.json")).config
     let [_, neighbors] = await initTable(node);
 
+    message.payload = `${name} says hello!`
+    message.hops = 10
+
     // Función para enviar un mensaje a todos los vecinos
-    const floodMessage = (messageBody) => { // Se asume que el formato viene como un objeto
+    const floodMessage = (message) => { // Se asume que el formato viene como un objeto
 
         message.hops -= 1;
         if (message.hops <= 0) return;
 
         neighbors.forEach(n => {
-            sendMessage(name, names[n], JSON.stringify(messageBody)); // Enviar el cuerpo del mensaje como un string
+            message.to = names[n],
+            sendMessage(name, names[n], JSON.stringify(message)); // Enviar el cuerpo del mensaje como un string
         });
     };
 
     setInterval(() => {
         console.log(`Nodo ${name}: Enviando mensaje de flooding a vecinos...`);
-        floodMessage(messageBody);
+        floodMessage(message);
     }, 1000);
 }
 

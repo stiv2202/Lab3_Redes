@@ -1,32 +1,46 @@
-const { input, readJsonFile, verifyName } = require('../utils.js')
-const { flooding } = require('./flooding.js')
-const ALGORITHM = 'flooding';
+const { readJsonFile } = require('./utils.js')
+const { flooding } = require('./flooding')
+const { startNode } = require('./start_node.js')
+const { ALGORITHM } = require('./consts.js')
+const { distanceVectorSend } = require('./distance-vector')
 
 const main = async () => {
-    let name = await input("Ingresa tu usuario de '@alumchat.lol': ");
-    name = name.split('@')[0];
-
-    const node = await verifyName(name);
-    if (!node) {
-        process.exit(1);
-    }
+    const [name, node] = await startNode()
+    const names = (await readJsonFile("./names.json")).config
 
     console.log(`¡Bienvenido: ${name}!`);
 
     console.log(`Iniciando algoritmo ${ALGORITHM}...`);
 
-    if (ALGORITHM === 'flooding') {
+    const message = {
+        id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
+        type: "info",
+        from: `${name}@alumchat.lol`,
+        hops: 3,
+        payload: `${name} says hello!`
+    }
 
-        const message = {
-            id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
-            type: "flooding",
-            from: `${name}@alumchat.lol`,
-            hops: 10,
-            payload: `${name} says hello!`
-        };
+    switch (ALGORITHM) {
+        case 'flooding':
+            // const message = {
+            //     id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
+            //     type: "flooding",
+            //     from: `${name}@alumchat.lol`,
+            //     hops: 10,
+            //     payload: `${name} says hello!`
+            // };
 
-        flooding(name, message);
+            // message.payload = `${name} says hello!`
+
+            flooding(name, node, names, message);
+            break;
+        case 'distance-vector':
+            distanceVectorSend(name, node, names, message)
+            break;
+        default:
+            console.log("Algoritmo no válido.")
+            break;
     }
 }
 
-main();
+main()

@@ -3,6 +3,7 @@ const { input, verifyName } = require('./utils.js');
 
 const startNode = async () => {
     let username = await input("Ingresa tu usuario de '@alumchat.lol': ");
+    username = username.split('@')[0];
     let password = await input("Ingresa tu contraseña: ");
 
     const node = await verifyName(username);
@@ -14,6 +15,9 @@ const startNode = async () => {
 
     console.log(`ESTE ES EL NODO ${node}`);
 
+    return [username, node]
 }
 
-startNode();
+// startNode();
+
+module.exports = { startNode }

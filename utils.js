@@ -78,10 +78,18 @@ const initTable = async (node) => {
     return [table, neighbors]
 }
 
+const decodeHtmlEntities = (str) => {
+    return str.replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+};
+
 module.exports = {
     readJsonFile,
     input,
     verifyName,
     initTable,
     getRandomNumber,
+    decodeHtmlEntities,
 };
