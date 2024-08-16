@@ -12,11 +12,11 @@ global.window = window;
 
 const connection = new Strophe.Connection(XMPP_SERVER);
 
-const login = () => {
-  connection.connect(`${USERNAME}@${DOMAIN_NAME}/${RESOURCE}`, PASSWORD, (status) => {
+const login = (username, password) => {
+  connection.connect(`${username}@${DOMAIN_NAME}/${RESOURCE}`, password, (status) => {
     switch (status) {
       case Strophe.Status.CONNECTED:
-        console.log(`Conectado exitosamente como ${USERNAME}@${DOMAIN_NAME}/${RESOURCE}`);
+        console.log(`Conectado exitosamente como ${username}@${DOMAIN_NAME}/${RESOURCE}`);
         connection.addHandler(onMessage, null, 'message', 'chat', null);
         sendPresence();
         break;
@@ -50,15 +50,15 @@ const onMessage = (message) => {
   return true;
 }
 
-const sendMessage = (to, boddy) => {
-  let from = `${USERNAME}@${DOMAIN_NAME}`
+const sendMessage = (from, to, body) => {
+  let fullFrom = `${USERNAME}@${DOMAIN_NAME}`
   to = `${to}${RESOURCE.trim() != '' ?  `/${RESOURCE}` : '' }`
-  from = `${from}${RESOURCE.trim() != '' ?  `/${RESOURCE}` : '' }`
+  fullFrom = `${from}${RESOURCE.trim() != '' ?  `/${RESOURCE}` : '' }`
   const message = $msg({
     to,
-    from,
+    fullFrom,
     type: 'chat'
-  }).c('body').t(boddy);
+  }).c('body').t(body);
 
   connection.send(message);
 }

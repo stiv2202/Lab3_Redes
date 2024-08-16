@@ -29,7 +29,6 @@ const input = async (question) => {
     return new Promise((resolve) => {
         rl.question(question, (answer) => {
             resolve(answer);
-            rl.close();
         });
     });
 }

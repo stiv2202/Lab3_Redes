@@ -1,5 +1,5 @@
-const { initTable, input, readJsonFile, verifyName } = require('./utils.js')
-const { login, sendMessage } = require('./server.js');
+const { initTable, input, readJsonFile, verifyName } = require('../utils.js')
+const { login, sendMessage } = require('../server.js');
 
 const main = async () => {
     let name = await input("Ingresa tu usuario de '@alumchat.lol': ");
