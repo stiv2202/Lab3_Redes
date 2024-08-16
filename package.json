@@ -50,6 +50,7 @@
     "escalade": "^3.1.2",
     "escape-string-regexp": "^1.0.5",
     "events": "^3.3.0",
+    "fastpriorityqueue": "^0.7.5",
     "fill-range": "^7.1.1",
     "find-cache-dir": "^2.1.0",
     "find-up": "^3.0.0",
