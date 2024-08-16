@@ -1,4 +1,4 @@
-let TABLE = [];
+let TABLE = {};
 let NODE = undefined;
 
 const updateTable = (newTable) => {

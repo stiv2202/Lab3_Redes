@@ -3,7 +3,7 @@ const { Strophe, $msg, $pres } = require('strophe.js');
 const { ALGORITHM } = require('./consts');
 const { distanceVectorReceive } = require('./distance-vector');
 const { setSendMessage } = require('./mediator.js');
-const { decodeHtmlEntities } = require('./utils.js')
+const { decodeHtmlEntities, verifyName } = require('./utils.js')
 const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
 const DOMAIN_NAME = 'alumchat.lol';
 const RESOURCE = 'LAB3';
@@ -45,8 +45,6 @@ const onMessage = (message) => {
         let body = Strophe.getText(bodyElement);
         body = decodeHtmlEntities(body)
 
-        console.log("body: ", body)
-
         try {
             const jsonBody = JSON.parse(body)
 
@@ -54,7 +52,7 @@ const onMessage = (message) => {
                 case 'info':
                     switch (ALGORITHM) {
                         case 'distance-vector':
-                            distanceVectorReceive(jsonBody.payload)
+                            distanceVectorReceive(jsonBody.payload, from)
                             break;
                         default:
                             console.log("Algoritmo no válido. Imprimiendo mensaje en crudo.")
