@@ -1,12 +1,14 @@
 const { initTable } = require('../utils.js');
 const { sendMessage } = require('../mediator.js');
-let { TABLE } = require('./enviroment.js');
+let { updateTable } = require('../enviroment.js');
+const { getNode, getTable } = require('../enviroment.js');
 
 const distanceVectorSend = async (name, node, names, message) => {
-    let neighbors;
-    [TABLE, neighbors] = await initTable(node);
+    const [table, neighbors] = await initTable(node);
 
-    message.payload = TABLE;
+    updateTable(table)
+
+    message.payload = table;
 
     setInterval(() => {
         console.log("Enviando vecinos...");
@@ -19,6 +21,8 @@ const distanceVectorSend = async (name, node, names, message) => {
 
 const distanceVectorReceive = async (info) => {
     console.log("info: ", info)
+    console.log("NODE: ", getNode())
+    console.log("TABLE", getTable())
 }
 
 module.exports = {

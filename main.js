@@ -2,12 +2,14 @@ const { readJsonFile } = require('./utils.js')
 const { flooding } = require('./flooding')
 const { startNode } = require('./start_node.js')
 const { ALGORITHM } = require('./consts.js')
+let { updateNode } = require('./enviroment.js')
 const { distanceVectorSend } = require('./distance-vector')
 
 const main = async () => {
     const [name, node] = await startNode()
+    updateNode(node)
     const names = (await readJsonFile("./names.json")).config
-
+    
     console.log(`¡Bienvenido: ${name}!`);
 
     console.log(`Iniciando algoritmo ${ALGORITHM}...`);
