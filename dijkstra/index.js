@@ -74,6 +74,45 @@ class Graph {
 	}
 }
 
+/**
+ * 
+ * @param {*} message Mensaje a enviar. Debe contener obligatoriamente el campo 'to.
+ * @param {*} topology La estructura de la topología debe ser { nodo: [vecinos] }
+ * Si no se especifica, se asume que la topología es la misma que la del archivo 'topo.json'
+ */
+const dijkstraSend = async (message, topology=null) => {
+
+  // Cargar topología por default
+  if(!topology) {
+    const t = await readJsonFile('topo.json');
+    topology = t.config;
+  }
+
+	const names = await readJsonFile('names.json');
+
+  const startNode = getNode();
+	const destinationNode = Object.keys(names.config).find(key => names.config[key] === message.to);
+	
+	if(!destinationNode) {
+		console.log("El usuario destino no está en la topología.");
+		return;
+	}
+
+  // Calcular el camino
+  const graph = new Graph(topology);
+  const path = graph.shortestPath(startNode, destinationNode);
+	
+  // Enviar el mensaje a siguiente nodo
+  if(path.length > 1) {
+    const nextNode = path[1];
+		
+		const nextNodeName = names.config[nextNode];
+	
+    sendMessage(names[startNode], nextNodeName, JSON.stringify(message));
+  }
+}
+
 module.exports = {
   Graph,
+	dijkstraSend
 }

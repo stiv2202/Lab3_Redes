@@ -1,4 +1,7 @@
 const domainName = "alumchat.lol"
-const ALGORITHM = 'distance-vector'; // Definir el algoritmo a utilizar en la ejecución del programa.
+
+// Definir el algoritmo a utilizar en la ejecución del programa.
+const ALGORITHM = 'distance-vector'; 
+//const ALGORITHM = 'dijkstra';
 
 module.exports = { domainName, ALGORITHM };

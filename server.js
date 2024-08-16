@@ -3,7 +3,8 @@ const { Strophe, $msg, $pres } = require('strophe.js');
 const { ALGORITHM } = require('./consts');
 const { distanceVectorReceive } = require('./distance-vector');
 const { setSendMessage } = require('./mediator.js');
-const { decodeHtmlEntities, verifyName } = require('./utils.js')
+const { decodeHtmlEntities, verifyName } = require('./utils.js');
+const { dijkstraSend } = require('./dijkstra/index.js');
 const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
 const DOMAIN_NAME = 'alumchat.lol';
 const RESOURCE = 'LAB3';
@@ -53,6 +54,12 @@ const onMessage = (message) => {
                     switch (ALGORITHM) {
                         case 'distance-vector':
                             distanceVectorReceive(jsonBody.payload, from)
+                            break;
+
+                        case 'dijkstra':
+                            console.log(`Mensaje recibido de ${from}: ${body}`);
+
+                            dijkstraSend(jsonBody);
                             break;
                         default:
                             console.log("Algoritmo no válido. Imprimiendo mensaje en crudo.")
