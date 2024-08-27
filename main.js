@@ -16,28 +16,26 @@ const main = async () => {
 
     console.log(`Iniciando algoritmo ${ALGORITHM}...`);
 
-    const message = {
+    let message = {
         id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
         type: "info",
         from: `${name}@alumchat.lol`,
-        to: "zam21780-react1@alumchat.lol",
+        to: "zam21780-lab3-3@alumchat.lol",
         hops: 3,
         payload: `${name} says hello!`
     }
 
     switch (ALGORITHM) {
         case 'flooding':
-            // const message = {
-            //     id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
-            //     type: "flooding",
-            //     from: `${name}@alumchat.lol`,
-            //     hops: 10,
-            //     payload: `${name} says hello!`
-            // };
+            message = {
+                id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
+                type: "info",
+                to: 'G', // Nombre del nodo inicial
+                hops: 10,
+                payload: `${name} says hello!`
+            }
 
-            // message.payload = `${name} says hello!`
-
-            flooding(name, node, names, message);
+            flooding(message);
             break;
         case 'distance-vector':
             distanceVectorSend(name, node, names, message)

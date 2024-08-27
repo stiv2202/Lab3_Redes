@@ -5,6 +5,7 @@ const { distanceVectorReceive } = require('./distance-vector');
 const { setSendMessage } = require('./mediator.js');
 const { decodeHtmlEntities, verifyName } = require('./utils.js');
 const { dijkstraSend } = require('./dijkstra/index.js');
+const { flooding } = require('./flooding/index.js'); 
 const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
 const DOMAIN_NAME = 'alumchat.lol';
 const RESOURCE = 'LAB3';
@@ -60,6 +61,10 @@ const onMessage = (message) => {
                             console.log(`Mensaje recibido de ${from}: ${body}`);
 
                             dijkstraSend(jsonBody);
+                            break;
+
+                        case 'flooding':
+                            flooding(jsonBody);
                             break;
                         default:
                             console.log("Algoritmo no válido. Imprimiendo mensaje en crudo.")
