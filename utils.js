@@ -65,6 +65,30 @@ const getRandomNumber = (min, max, integer = false) => {
     return number
 }
 
+const initTableDV = async (node, names) => {
+    const vector = {}
+    const data = await readJsonFile('topo.json');
+    const config = data.config;
+    const nodes = Object.keys(config)
+    let neighbors = Object.values(config).at(Object.keys(config).indexOf(node))
+    neighbors = neighbors.map(n => names[n])
+
+    nodes.forEach(n => {
+        if (n === node)
+            vector[n] = 0
+        else if (neighbors.includes(names[n]))
+            vector[n] = getRandomNumber(1, 10, true)
+        else
+            vector[n] = null
+    });
+
+    const table = {
+        [node]: vector
+    }
+
+    return [table, neighbors]
+}
+
 const initTable = async (node) => {
     const table = {}
     const data = await readJsonFile('topo.json');
@@ -92,4 +116,5 @@ module.exports = {
     initTable,
     getRandomNumber,
     decodeHtmlEntities,
+    initTableDV,
 };

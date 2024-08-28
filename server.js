@@ -54,7 +54,7 @@ const onMessage = (message) => {
                 case 'info':
                     switch (ALGORITHM) {
                         case 'distance-vector':
-                            distanceVectorReceive(jsonBody.payload, from)
+                            distanceVectorReceive(jsonBody, from)
                             break;
 
                         case 'dijkstra':
@@ -80,7 +80,6 @@ const onMessage = (message) => {
 
         } catch (e) {
             // El mensaje recibido no es de tipo JSON o no es válido
-            console.log("Error >>>>>>>>", e);
             console.log(`Mensaje recibido de ${from}: ${body}`);
         }
     }
