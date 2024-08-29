@@ -1,4 +1,4 @@
-const { initTableDV, verifyName, readJsonFile } = require('../utils.js');
+const { initTableDV, verifyName, readJsonFile, infiniteTableDV, isTableEmpty } = require('../utils.js');
 const { sendMessage } = require('../mediator.js');
 let { updateTable } = require('../enviroment.js');
 const { getTable } = require('../enviroment.js');
@@ -28,11 +28,16 @@ const distanceVectorReceive = async (message, source) => {
     }
 
     const myNode = Object.keys(names).find(key => names[key] === message.to);
-    const currentTable = getTable()
-    console.log("TABLE", currentTable)
+    let currentTable = getTable()
+    console.log("TABLE-PREV", currentTable)
+    if (isTableEmpty(currentTable)) {
+        currentTable = await infiniteTableDV(myNode, names);
+        console.log("TABLE-POST", currentTable)
+    }
     currentTable[source] = info
     const myVector = currentTable[myNode]
     const distanceToSource = typeof myVector[source] === 'number' ? myVector[source] : myVector[source][0]
+    info[myNode] = info[myNode] === null ? Number.POSITIVE_INFINITY : info[myNode]
     myVector[source] = myVector[source] <= info[myNode] ? myVector[source] : typeof info[myNode] === 'number' ? info[myNode] : info[myNode][0]
 
     Object.keys(myVector).forEach((node) => {

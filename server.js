@@ -2,10 +2,10 @@ const { JSDOM } = require('jsdom');
 const { Strophe, $msg, $pres } = require('strophe.js');
 const { ALGORITHM } = require('./consts');
 const { distanceVectorReceive } = require('./distance-vector');
-const { setSendMessage } = require('./mediator.js');
+const { setSendMessage, setSendEchoMessage } = require('./mediator.js');
 const { decodeHtmlEntities, verifyName } = require('./utils.js');
 const { dijkstraSend } = require('./dijkstra/index.js');
-const { flooding } = require('./flooding/index.js'); 
+const { flooding } = require('./flooding/index.js');
 const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
 const DOMAIN_NAME = 'alumchat.lol';
 const RESOURCE = 'LAB3';
@@ -16,27 +16,41 @@ global.window = window;
 
 const connection = new Strophe.Connection(XMPP_SERVER);
 
-const login = (username, password) => {
-    connection.connect(`${username}@${DOMAIN_NAME}/${RESOURCE}`, password, (status) => {
-        switch (status) {
-            case Strophe.Status.CONNECTED:
-                console.log(`Conectado exitosamente como ${username}@${DOMAIN_NAME}/${RESOURCE}`);
-                connection.addHandler(onMessage, null, 'message', 'chat', null);
-                sendPresence();
-                break;
-            case Strophe.Status.DISCONNECTED:
-                console.log('Desconectado del servidor XMPP.');
-                break;
-            case Strophe.Status.CONNFAIL:
-                console.error('Falló la conexión al servidor XMPP.');
-                break;
-            case Strophe.Status.AUTHFAIL:
-                console.error('Falló la autenticación.');
-                break;
-            default:
-                console.log(`Estado de conexión: ${status}`);
-                break;
-        }
+const login = (username, password, node) => {
+    return new Promise((resolve, reject) => {
+        let connectionTimeout = setTimeout(() => {
+            reject(new Error('Connection timeout'));
+        }, 30000); // 30 seconds timeout
+
+        connection.connect(`${username}@${DOMAIN_NAME}/${RESOURCE}`, password, (status) => {
+            switch (status) {
+                case Strophe.Status.CONNECTING:
+                    console.log('Conectando...');
+                    break;
+                case Strophe.Status.CONNFAIL:
+                    clearTimeout(connectionTimeout);
+                    reject(new Error('Connection failed'));
+                    break;
+                case Strophe.Status.AUTHENTICATING:
+                    console.log('Authenticating...');
+                    break;
+                case Strophe.Status.AUTHFAIL:
+                    clearTimeout(connectionTimeout);
+                    reject(new Error('Authentication failed'));
+                    break;
+                case Strophe.Status.CONNECTED:
+                    clearTimeout(connectionTimeout);
+                    console.log(`Conectado exitosamente como ${username}@${DOMAIN_NAME}/${RESOURCE}`);
+                    connection.addHandler(onMessage, null, 'message', 'chat', null);
+                    sendPresence();
+                    resolve([username, node]);
+                    break;
+                case Strophe.Status.DISCONNECTED:
+                    clearTimeout(connectionTimeout);
+                    reject(new Error('Disconnected'));
+                    break;
+            }
+        });
     });
 }
 
@@ -72,6 +86,20 @@ const onMessage = (message) => {
                             break;
                     }
                     break;
+                // case 'echo':
+                //     if (jsonBody.hops === 0) {
+                //         break;
+                //     }
+                //     const newHops = jsonBody.hops + 1
+                //     const newMessage = jsonBody
+                //     newMessage.from = jsonBody.to
+                //     newMessage.to = jsonBody.from
+                //     newMessage.hops = newHops
+                //     sendMessage(newMessage.from, newMessage.to, JSON.stringify(newMessage))
+                //     break;
+                case 'echo':
+                    console.log('Mensaje de eco recibido.')
+                    break;
                 default:
                     console.log("Tipo no válido. Imprimiendo mensaje en crudo.")
                     console.log(`Mensaje recibido de ${from}: ${body}`);
@@ -86,6 +114,52 @@ const onMessage = (message) => {
 
     return true;
 }
+
+const sendEchoMessage = (myNode, targetNode) => {
+    return new Promise((resolve, reject) => {
+        const start = Date.now();
+        const echoMessage = {
+            id: `${targetNode.split('@')[0]}-${Date.now()}`, // Un ID único para cada mensaje
+            type: "echo",
+            from: myNode,
+            to: targetNode,
+            hops: 1,
+            payload: 'Echo message'
+        }
+        const message = $msg({
+            to: targetNode,
+            from: myNode,
+            type: 'chat'
+        }).c('body').t(JSON.stringify(echoMessage));
+
+        connection.send(message);
+        const handler = connection.addHandler((msg) => {
+            const from = msg.getAttribute('from');
+            const bodyElement = msg.getElementsByTagName('body')[0];
+            if (bodyElement) {
+                let body = Strophe.getText(bodyElement);
+                body = decodeHtmlEntities(body)
+
+                try {
+                    const jsonBody = JSON.parse(body)
+                    if (jsonBody.type === 'echo') {
+                        connection.deleteHandler(handler);
+                        resolve(Date.now() - start);
+                    }
+                } catch {
+                    console.error('El mensaje recibido no es de tipo JSON.')
+                }
+            }
+        }, null, 'message', null, null, null);
+        // Add a timeout to reject the promise if no response is received
+        setTimeout(() => {
+            connection.deleteHandler(handler);
+            reject(new Error('Echo timeout'));
+        }, 20000);
+    });
+}
+
+setSendEchoMessage(sendEchoMessage);
 
 const sendMessage = (from, to, body) => {
     from = `${from}@${DOMAIN_NAME}`;
@@ -110,5 +184,5 @@ const sendPresence = () => {
 }
 
 module.exports = {
-    login
+    login,
 };

@@ -14,7 +14,24 @@ const sendMessage = (from, to, body) => {
     }
 };
 
+let sendEchoMessageFunc = null;
+
+const setSendEchoMessage = (func) => {
+    sendEchoMessageFunc = func;
+};
+
+const sendEchoMessage = (from, to, body) => {
+    if (sendEchoMessageFunc) {
+        return sendEchoMessageFunc(from, to, body);
+    } else {
+        console.error("sendEchoMessage function is not set");
+        return Promise.reject(new Error("sendEchoMessage function is not set"));
+    }
+};
+
 module.exports = {
     setSendMessage,
-    sendMessage
+    sendMessage,
+    setSendEchoMessage,
+    sendEchoMessage
 };
