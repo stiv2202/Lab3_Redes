@@ -58,7 +58,7 @@ const main = async () => {
                     flooding(message);
                     break;
                 case 'distance-vector':
-                    let message = {
+                    message = {
                         type: "weights",
                         table: `${name} says hello!`,
                         version: 0,
@@ -68,10 +68,20 @@ const main = async () => {
                     break;
 
                 case 'dijkstra':
-                    setTimeout(() => {
+                    
+                    input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
+                        message = {
+                            type: "message",
+                            to: `${destinationName}@alumchat.lol`,
+                            from: `${name}@alumchat.lol`,
+                            data: await input("Ingrese el mensaje a enviar: "),
+                        }
+    
                         console.log("Enviando mensaje con dijkstra...")
                         dijkstraSend(message)
-                    }, 5000)
+                    });
+                    
+
                     break;
                 case 'link-state':
                     setTimeout(() => {

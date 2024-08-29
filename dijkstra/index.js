@@ -92,6 +92,12 @@ const dijkstraSend = async (message, topology=null) => {
 
   const startNode = getNode();
 	const destinationNode = Object.keys(names.config).find(key => names.config[key] === message.to);
+
+	// Verificar si es el destinatario
+	if(startNode === destinationNode) {
+		console.log("El mensaje llegó a su destino!: ", message);
+		return;
+	}
 	
 	if(!destinationNode) {
 		console.log("El usuario destino no está en la topología.");
@@ -106,9 +112,10 @@ const dijkstraSend = async (message, topology=null) => {
   if(path.length > 1) {
     const nextNode = path[1];
 		
+		const startNodeName = names.config[startNode];
 		const nextNodeName = names.config[nextNode];
-	
-    sendMessage(names[startNode], nextNodeName, JSON.stringify(message));
+		console.log(`Enviando mensaje a siguiente nodo ${nextNodeName}...`);
+    sendMessage(startNodeName, nextNodeName, JSON.stringify(message));
   }
 }
 

@@ -73,13 +73,6 @@ const onMessage = (message) => {
                             break;
 
                         // Verificar que el resto de algoritmos apliquen también para este type.
-
-                        case 'dijkstra':
-                            console.log(`Mensaje recibido de ${from}: ${body}`);
-
-                            dijkstraSend(jsonBody);
-                            break;
-
                         case 'flooding':
                             flooding(jsonBody);
                             break;
@@ -102,6 +95,11 @@ const onMessage = (message) => {
                     break;
                 case 'message':
                     console.log(`Mensaje recibido de ${jsonBody.from}: ${jsonBody.table ?? ''}`);
+
+                    case 'dijkstra':
+                        dijkstraSend(jsonBody);
+                        break;
+
                     break;
                 default:
                     console.log("Tipo no válido. Imprimiendo mensaje en crudo.")
