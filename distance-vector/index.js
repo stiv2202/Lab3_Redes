@@ -49,14 +49,6 @@ const distanceVectorReceive = async (message, source) => {
 
 
     updateTable(currentTable)
-
-    // Object.keys(info).forEach((node) => {
-    //     if (!Object.keys(currentTable).includes(node))
-    //         currentTable[node] = [info[node], source]
-    //     else if (info[node] < currentTable[node])
-    //         currentTable[node] = [info[node], source]
-    //     updateTable(currentTable)
-    // })
 }
 
 module.exports = {

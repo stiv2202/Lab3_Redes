@@ -3,12 +3,12 @@ const { Strophe, $msg, $pres } = require('strophe.js');
 const { ALGORITHM } = require('./consts');
 const { distanceVectorReceive } = require('./distance-vector');
 const { setSendMessage, setSendEchoMessage } = require('./mediator.js');
-const { decodeHtmlEntities, verifyName } = require('./utils.js');
+const { decodeHtmlEntities } = require('./utils.js');
 const { dijkstraSend } = require('./dijkstra/index.js');
 const { flooding } = require('./flooding/index.js');
 const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
 const DOMAIN_NAME = 'alumchat.lol';
-const RESOURCE = '';
+const RESOURCE = 'LAB_3';
 
 const { window } = new JSDOM('');
 global.document = window.document;
@@ -88,18 +88,16 @@ const onMessage = (message) => {
                     break;
                 case 'echo':
                     console.log('Mensaje de eco recibido.')
-                    if (jsonBody.hops <= 0) {
-                        console.log('Límite de saltos alcanzado. No se reenvía el mensaje.');
-                        return;
+                    if (jsonBody.hops > 0) {
+                        const newMessage = {
+                            ...jsonBody,
+                            from: jsonBody.to,
+                            to: jsonBody.from,
+                            hops: jsonBody.hops - 1
+                        };
+                        sendMessage(newMessage.from.split('@')[0], newMessage.to, JSON.stringify(newMessage))
+                        console.log('Mensaje de eco respondido.')
                     }
-                    const newMessage = {
-                        ...jsonBody,
-                        from: jsonBody.to,
-                        to: jsonBody.from,
-                        hops: jsonBody.hops - 1
-                    };
-                    sendMessage(newMessage.from, newMessage.to, JSON.stringify(newMessage))
-                    console.log('Mensaje de eco respondido.')
                     break;
                 default:
                     console.log("Tipo no válido. Imprimiendo mensaje en crudo.")
@@ -145,7 +143,7 @@ const sendEchoMessage = (myNode, targetNode) => {
                 try {
                     const jsonBody = JSON.parse(body)
                     if (jsonBody.type === 'echo' && jsonBody.id === echoMessage.id) {
-                        connection.deleteHandler(handler);
+                        // connection.deleteHandler(handler);
                         resolve(Date.now() - start);
                     }
                 } catch {
@@ -155,7 +153,7 @@ const sendEchoMessage = (myNode, targetNode) => {
         }, null, 'message', null, null, null);
 
         setTimeout(() => {
-            connection.deleteHandler(handler);
+            // connection.deleteHandler(handler);
             reject(new Error('Echo timeout'));
         }, 15000);
     });
