@@ -19,8 +19,6 @@ const main = async () => {
 
         console.log(`¡Bienvenido: ${name}!`);
 
-        console.log(`Iniciando algoritmo ${ALGORITHM}...`);
-
         let message = {
             id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
             type: "info",
@@ -30,38 +28,43 @@ const main = async () => {
             payload: `${name} says hello!`
         }
 
-        switch (ALGORITHM) {
-            case 'flooding':
-                message = {
-                    id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
-                    type: "info",
-                    to: `${name}@alumchat.lol`, // Nombre del nodo inicial
-                    hops: 10,
-                    payload: `${name} says hello!`
-                }
+        console.log("Presione Enter para iniciar el programa");
+        process.stdin.once('data', () => {
+            console.log(`Iniciando algoritmo ${ALGORITHM}...`);
+            
+            switch (ALGORITHM) {
+                case 'flooding':
+                    message = {
+                        id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
+                        type: "info",
+                        to: `${name}@alumchat.lol`, // Nombre del nodo inicial
+                        hops: 10,
+                        payload: `${name} says hello!`
+                    }
 
-                flooding(message);
-                break;
-            case 'distance-vector':
-                distanceVectorSend(name, node, names, message)
-                break;
+                    flooding(message);
+                    break;
+                case 'distance-vector':
+                    distanceVectorSend(name, node, names, message)
+                    break;
 
-            case 'dijkstra':
-                setTimeout(() => {
-                    console.log("Enviando mensaje con dijkstra...")
-                    dijkstraSend(message)
-                }, 5000)
-                break;
-            case 'link-state':
-                setTimeout(() => {
-                    console.log("Enviando mensaje con link-state...")
-                    linkStateSend(message)
-                }, 5000)
-                break;
-            default:
-                console.log("Algoritmo no válido.")
-                break;
-        }
+                case 'dijkstra':
+                    setTimeout(() => {
+                        console.log("Enviando mensaje con dijkstra...")
+                        dijkstraSend(message)
+                    }, 5000)
+                    break;
+                case 'link-state':
+                    setTimeout(() => {
+                        console.log("Enviando mensaje con link-state...")
+                        linkStateSend(message)
+                    }, 5000)
+                    break;
+                default:
+                    console.log("Algoritmo no válido.")
+                    break;
+            }
+        });
     } catch (error) {
         console.error('Inicio de sesión fallido:', error);
         process.exit(1)

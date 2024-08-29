@@ -103,6 +103,7 @@ const initTableDV = async (node, names) => {
             try {
                 const echoTime = await sendEchoMessage(names[node], names[n]);
                 vector[n] = echoTime;
+                console.log(`Distancia obtenida para ${names[n]}: ${echoTime}`)
             } catch (err) {
                 console.error(`Error obteniendo distancia de ${names[n]}: ${err.message}`);
                 vector[n] = Number.POSITIVE_INFINITY;

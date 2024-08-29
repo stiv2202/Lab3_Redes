@@ -29,11 +29,10 @@ const distanceVectorReceive = async (message, source) => {
 
     const myNode = Object.keys(names).find(key => names[key] === message.to);
     let currentTable = getTable()
-    console.log("TABLE-PREV", currentTable)
     if (isTableEmpty(currentTable)) {
-        currentTable = await infiniteTableDV(myNode, names);
-        console.log("TABLE-POST", currentTable)
+        return
     }
+    console.log("TABLE", currentTable)
     currentTable[source] = info
     const myVector = currentTable[myNode]
     const distanceToSource = typeof myVector[source] === 'number' ? myVector[source] : myVector[source][0]

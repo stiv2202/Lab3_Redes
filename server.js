@@ -8,7 +8,7 @@ const { dijkstraSend } = require('./dijkstra/index.js');
 const { flooding } = require('./flooding/index.js');
 const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
 const DOMAIN_NAME = 'alumchat.lol';
-const RESOURCE = 'LAB3';
+const RESOURCE = '';
 
 const { window } = new JSDOM('');
 global.document = window.document;
@@ -86,19 +86,20 @@ const onMessage = (message) => {
                             break;
                     }
                     break;
-                // case 'echo':
-                //     if (jsonBody.hops === 0) {
-                //         break;
-                //     }
-                //     const newHops = jsonBody.hops + 1
-                //     const newMessage = jsonBody
-                //     newMessage.from = jsonBody.to
-                //     newMessage.to = jsonBody.from
-                //     newMessage.hops = newHops
-                //     sendMessage(newMessage.from, newMessage.to, JSON.stringify(newMessage))
-                //     break;
                 case 'echo':
                     console.log('Mensaje de eco recibido.')
+                    if (jsonBody.hops <= 0) {
+                        console.log('Límite de saltos alcanzado. No se reenvía el mensaje.');
+                        return;
+                    }
+                    const newMessage = {
+                        ...jsonBody,
+                        from: jsonBody.to,
+                        to: jsonBody.from,
+                        hops: jsonBody.hops - 1
+                    };
+                    sendMessage(newMessage.from, newMessage.to, JSON.stringify(newMessage))
+                    console.log('Mensaje de eco respondido.')
                     break;
                 default:
                     console.log("Tipo no válido. Imprimiendo mensaje en crudo.")
@@ -116,6 +117,8 @@ const onMessage = (message) => {
 }
 
 const sendEchoMessage = (myNode, targetNode) => {
+    from = `${myNode}${RESOURCE.trim() != '' ? `/${RESOURCE}` : ''}`;
+    to = `${targetNode}${RESOURCE.trim() != '' ? `/${RESOURCE}` : ''}`;
     return new Promise((resolve, reject) => {
         const start = Date.now();
         const echoMessage = {
@@ -127,14 +130,13 @@ const sendEchoMessage = (myNode, targetNode) => {
             payload: 'Echo message'
         }
         const message = $msg({
-            to: targetNode,
-            from: myNode,
+            to,
+            from,
             type: 'chat'
         }).c('body').t(JSON.stringify(echoMessage));
 
         connection.send(message);
         const handler = connection.addHandler((msg) => {
-            const from = msg.getAttribute('from');
             const bodyElement = msg.getElementsByTagName('body')[0];
             if (bodyElement) {
                 let body = Strophe.getText(bodyElement);
@@ -142,7 +144,7 @@ const sendEchoMessage = (myNode, targetNode) => {
 
                 try {
                     const jsonBody = JSON.parse(body)
-                    if (jsonBody.type === 'echo') {
+                    if (jsonBody.type === 'echo' && jsonBody.id === echoMessage.id) {
                         connection.deleteHandler(handler);
                         resolve(Date.now() - start);
                     }
@@ -151,11 +153,11 @@ const sendEchoMessage = (myNode, targetNode) => {
                 }
             }
         }, null, 'message', null, null, null);
-        
+
         setTimeout(() => {
             connection.deleteHandler(handler);
             reject(new Error('Echo timeout'));
-        }, 20000);
+        }, 15000);
     });
 }
 
@@ -179,7 +181,7 @@ setSendMessage(sendMessage);
 const sendPresence = () => {
     const presence = $pres({
         type: 'available'
-    });
+    }).c('priority').t('50');
     connection.send(presence);
 }
 
