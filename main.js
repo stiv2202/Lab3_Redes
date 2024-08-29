@@ -88,15 +88,22 @@ const main = async () => {
 
 
                     break;
-                case 'link-state':
-                    setTimeout(() => {
-                        console.log("Enviando mensaje con link-state...")
-                        linkStateSend(message)
-                    }, 5000)
-                    break;
-                default:
-                    console.log("Algoritmo no válido.")
-                    break;
+                    case 'link-state':
+                        input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
+                            message = {
+                                ...message, // Retener las propiedades actuales del mensaje
+                                to: `${destinationName}@alumchat.lol`,
+                                data: await input("Ingrese el mensaje a enviar: "),
+                            };
+    
+                            console.log("Enviando mensaje con link-state...");
+                            linkStateSend(message);
+                        });
+                        break;
+    
+                    default:
+                        console.log("Algoritmo no válido.");
+                        break;
             }
         });
     } catch (error) {

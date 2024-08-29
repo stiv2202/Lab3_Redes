@@ -63,7 +63,14 @@ class LinkState {
   }
 }
 
+/**
+ * Enviar mensajes utilizando el algoritmo de Link State Routing.
+ * Este método también maneja la difusión del estado del enlace a los vecinos.
+ * @param {*} message Mensaje a enviar. Debe contener obligatoriamente el campo 'to'.
+ * @param {*} topology La estructura de la topología debe ser { nodo: [vecinos] }
+ */
 const linkStateSend = async (message, topology = null) => {
+  // Cargar topología por default
   if (!topology) {
     const t = await readJsonFile('topo.json');
     topology = t.config;
@@ -73,18 +80,51 @@ const linkStateSend = async (message, topology = null) => {
   const startNode = getNode();
   const destinationNode = Object.keys(names.config).find(key => names.config[key] === message.to);
 
+  // Verificar si es el destinatario
+  if (startNode === destinationNode) {
+    console.log("El mensaje llegó a su destino!: ", message);
+    return;
+  }
+
   if (!destinationNode) {
     console.log("El usuario destino no está en la topología.");
     return;
   }
 
+  // Difundir el estado del enlace a los vecinos
+  await broadcastLinkState(startNode, topology, names);
+
+  // Calcular la ruta más corta
   const linkState = new LinkState(topology);
   const path = linkState.getShortestPath(startNode, destinationNode);
 
+  // Enviar el mensaje al siguiente nodo
   if (path.length > 1) {
     const nextNode = path[1];
     const nextNodeName = names.config[nextNode];
-    sendMessage(names[startNode], nextNodeName, JSON.stringify(message));
+    console.log(`Enviando mensaje a siguiente nodo ${nextNodeName}...`);
+    sendMessage(names.config[startNode], nextNodeName, JSON.stringify(message));
+  }
+};
+
+/**
+ * Difundir el estado del enlace actual a todos los vecinos.
+ * @param {string} currentNode Nodo actual que está enviando su estado de enlace.
+ * @param {Object} topology La topología de la red.
+ * @param {Object} names Mapa de nombres de nodos a direcciones XMPP.
+ */
+const broadcastLinkState = async (currentNode, topology, names) => {
+  const neighbors = topology[currentNode];
+
+  for (let neighbor of neighbors) {
+    const linkStateMessage = {
+      type: "link-state",
+      from: names.config[currentNode],
+      to: names.config[neighbor],
+      topology: topology,
+    };
+    console.log(`Enviando estado de enlace a ${names.config[neighbor]}...`);
+    sendMessage(names.config[currentNode], names.config[neighbor], JSON.stringify(linkStateMessage));
   }
 };
 
