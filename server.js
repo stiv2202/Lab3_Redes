@@ -143,7 +143,7 @@ const sendEchoMessage = (myNode, targetNode) => {
                 try {
                     const jsonBody = JSON.parse(body)
                     if (jsonBody.type === 'echo' && jsonBody.id === echoMessage.id) {
-                        // connection.deleteHandler(handler);
+                        connection.deleteHandler(handler);
                         resolve(Date.now() - start);
                     }
                 } catch {
@@ -153,7 +153,7 @@ const sendEchoMessage = (myNode, targetNode) => {
         }, null, 'message', null, null, null);
 
         setTimeout(() => {
-            // connection.deleteHandler(handler);
+            connection.deleteHandler(handler);
             reject(new Error('Echo timeout'));
         }, 15000);
     });
