@@ -151,7 +151,7 @@ const sendEchoMessage = (myNode, targetNode) => {
                 }
             }
         }, null, 'message', null, null, null);
-        // Add a timeout to reject the promise if no response is received
+        
         setTimeout(() => {
             connection.deleteHandler(handler);
             reject(new Error('Echo timeout'));
