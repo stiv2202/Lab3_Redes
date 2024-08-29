@@ -4,11 +4,14 @@ const { sendMessage } = require("../mediator.js");
 const flooding = async (message) => { // Se asume que el formato de message viene como un objeto
 
     const names = (await readJsonFile("./names.json")).config
-    const node = message.to;
-    const name = names[node];
+    const name = message.to;
+
+    // Obtener nodo actual
+    const node = Object.keys(names).find(key => names[key] === message.to);
+
     const originalFrom = message.from;
 
-    console.log(message);
+    console.log(`Mensaje recibido de ${originalFrom}\n`);
 
     let [_, neighbors] = await initTable(node);
 
@@ -19,20 +22,19 @@ const flooding = async (message) => { // Se asume que el formato de message vien
             if (message.hops <= 0) return;
             
             console.log(`Enviando mensaje a ${n}`);
-            if (n === originalFrom) {
+            if (names[n] === originalFrom) {
                 console.log(`Saltando mensaje`);
                 return;
             }
 
-            message.from = node;
+            message.from = name;
             message.hops -= 1;
-            message.to = n;
+            message.to = names[n];
             sendMessage(name, names[n], JSON.stringify(message)); // Enviar el cuerpo del mensaje como un string
         });
 
         if (message.hops <= 0) {
-            console.log("Hops agotados");
-            console.log(`Mensaje recibido: ${message.payload}`);
+            console.log(`Mensaje recibido con hops agotados: ${message.payload}`);
             return;
         }
     };
