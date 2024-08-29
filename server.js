@@ -56,6 +56,7 @@ const login = (username, password, node) => {
 
 const onMessage = (message) => {
     const from = message.getAttribute('from');
+    const to = message.getAttribute('to').split('/')[0];
     const bodyElement = message.getElementsByTagName('body')[0];
     if (bodyElement) {
         let body = Strophe.getText(bodyElement);
@@ -65,11 +66,13 @@ const onMessage = (message) => {
             const jsonBody = JSON.parse(body)
 
             switch (jsonBody.type) {
-                case 'info':
+                case 'weights':
                     switch (ALGORITHM) {
                         case 'distance-vector':
-                            distanceVectorReceive(jsonBody, from)
+                            distanceVectorReceive(jsonBody, from, to)
                             break;
+
+                        // Verificar que el resto de algoritmos apliquen también para este type.
 
                         case 'dijkstra':
                             console.log(`Mensaje recibido de ${from}: ${body}`);
@@ -88,16 +91,17 @@ const onMessage = (message) => {
                     break;
                 case 'echo':
                     console.log('Mensaje de eco recibido.')
-                    if (jsonBody.hops > 0) {
-                        const newMessage = {
-                            ...jsonBody,
-                            from: jsonBody.to,
-                            to: jsonBody.from,
-                            hops: jsonBody.hops - 1
-                        };
-                        sendMessage(newMessage.from.split('@')[0], newMessage.to, JSON.stringify(newMessage))
-                        console.log('Mensaje de eco respondido.')
-                    }
+                    const newMessage = {
+                        type: 'echo_response'
+                    };
+                    sendMessage(to.split('@')[0], from, JSON.stringify(newMessage))
+                    console.log('Mensaje de eco respondido.')
+                    break;
+                case 'echo_response':
+                    console.log('Mensaje de eco devuelto.')
+                    break;
+                case 'message':
+                    console.log(`Mensaje recibido de ${jsonBody.from}: ${jsonBody.table ?? ''}`);
                     break;
                 default:
                     console.log("Tipo no válido. Imprimiendo mensaje en crudo.")
@@ -120,12 +124,7 @@ const sendEchoMessage = (myNode, targetNode) => {
     return new Promise((resolve, reject) => {
         const start = Date.now();
         const echoMessage = {
-            id: `${targetNode.split('@')[0]}-${Date.now()}`, // Un ID único para cada mensaje
             type: "echo",
-            from: myNode,
-            to: targetNode,
-            hops: 1,
-            payload: 'Echo message'
         }
         const message = $msg({
             to,
@@ -142,7 +141,7 @@ const sendEchoMessage = (myNode, targetNode) => {
 
                 try {
                     const jsonBody = JSON.parse(body)
-                    if (jsonBody.type === 'echo' && jsonBody.id === echoMessage.id) {
+                    if (jsonBody.type === 'echo_response') {
                         connection.deleteHandler(handler);
                         resolve(Date.now() - start);
                     }
