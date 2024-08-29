@@ -3,7 +3,7 @@ const { flooding } = require('./flooding')
 const { startNode } = require('./start_node.js')
 const { ALGORITHM } = require('./consts.js')
 let { updateNode } = require('./enviroment.js')
-const { distanceVectorSend } = require('./distance-vector')
+const { distanceVectorStart, distanceVectorSend } = require('./distance-vector')
 const { dijkstraSend } = require('./dijkstra/index.js')
 const { linkStateSend } = require('./link-state')
 const { input } = require('./utils.js');
@@ -58,17 +58,7 @@ const main = async () => {
                     flooding(message);
                     break;
                 case 'distance-vector':
-                    message = {
-                        type: "weights",
-                        table: `${name} says hello!`,
-                        version: 0,
-                        from: `${name}@alumchat.lol`,
-                    }
-                    distanceVectorSend(name, node, names, message)
-                    break;
-
-                case 'dijkstra':
-                    
+                    distanceVectorStart(name, node, names)
                     input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
                         message = {
                             type: "message",
@@ -76,11 +66,26 @@ const main = async () => {
                             from: `${name}@alumchat.lol`,
                             data: await input("Ingrese el mensaje a enviar: "),
                         }
-    
+
+                        console.log("Enviando mensaje con distance-vector...")
+                        distanceVectorSend(message)
+                    });
+                    break;
+
+                case 'dijkstra':
+
+                    input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
+                        message = {
+                            type: "message",
+                            to: `${destinationName}@alumchat.lol`,
+                            from: `${name}@alumchat.lol`,
+                            data: await input("Ingrese el mensaje a enviar: "),
+                        }
+
                         console.log("Enviando mensaje con dijkstra...")
                         dijkstraSend(message)
                     });
-                    
+
 
                     break;
                 case 'link-state':

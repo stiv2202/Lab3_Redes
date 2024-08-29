@@ -1,14 +1,62 @@
 const { initTableDV, verifyName, readJsonFile, infiniteTableDV, isTableEmpty } = require('../utils.js');
 const { sendMessage } = require('../mediator.js');
-let { updateTable } = require('../enviroment.js');
+let { updateTable, getNode } = require('../enviroment.js');
 const { getTable } = require('../enviroment.js');
 
 const lastUpdate = {};
 
-const distanceVectorSend = async (name, node, names, message) => {
+const waitForTableUpdate = (startNode, destinationNode, timeout = 1000000) => {
+    return new Promise((resolve, reject) => {
+        const interval = 100; // Check every 100ms
+        const start = Date.now();
+
+        const checkTable = () => {
+            const table = getTable();
+            if (table[startNode] && table[startNode][destinationNode] !== null) {
+                resolve(table);
+            } else if (Date.now() - start >= timeout) {
+                reject(new Error(`Timeout: Table was not populated for node ${startNode} within ${timeout}ms.`));
+            } else {
+                setTimeout(checkTable, interval);
+            }
+        };
+
+        checkTable();
+    });
+};
+
+const distanceVectorSend = async (message) => {
+    const names = (await readJsonFile("./names.json")).config
+    const startNode = getNode()
+    const destinationNode = Object.keys(names).find((key) => names[key] === message.to)
+
+    if (startNode === destinationNode) {
+        console.log("El mensaje llegó a su destino!: ", message);
+        return;
+    }
+
+    try {
+        console.log('Calculando siguiente salto...')
+        const table = await waitForTableUpdate(startNode, destinationNode);
+        const vector = table[startNode];
+        const nextNode = typeof vector[destinationNode] === 'number' ? destinationNode : vector[destinationNode][1];
+
+        sendMessage(names[startNode], names[nextNode], JSON.stringify(message));
+
+        console.log(`Mensaje transferido a ${nextNode}: ${names[nextNode]}`)
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+const distanceVectorStart = async (name, node, names) => {
+    message = {
+        type: "weights",
+        version: 0,
+        from: `${name}@alumchat.lol`,
+    }
     const [table, neighbors] = await initTableDV(node, names);
     updateTable(table)
-    console.log("Tabla actualizada: ", table)
     setInterval(() => {
 
         message.table = table[node];
@@ -43,11 +91,9 @@ const distanceVectorReceive = async (message, source, destine) => {
     source = await verifyName(source)
     const names = (await readJsonFile("./names.json")).config
     if (!source) {
-        console.log('El mensaje entrante no proviene de un miembro conocido de la red.')
+        console.error('La actualización de pesos no proviene de un miembro conocido de la red.')
         return
     }
-
-    console.log('lastUpdate: ', lastUpdate);
 
     lastUpdate[source] = (lastUpdate[source] || 0) + 1;
     lastUpdate[source] = Date.now();
@@ -57,7 +103,6 @@ const distanceVectorReceive = async (message, source, destine) => {
     if (isTableEmpty(currentTable)) {
         return
     }
-    console.log("TABLE", currentTable)
     currentTable[source] = info
     const myVector = currentTable[myNode]
     const distanceToSource = typeof myVector[source] === 'number' ? myVector[source] : myVector[source][0]
@@ -72,12 +117,12 @@ const distanceVectorReceive = async (message, source, destine) => {
         let mediator = undefined;
         const sourceToNode = info[node] === null ? null : typeof info[node] === 'number' ? info[node] : info[node][0]
 
-        if (Array.isArray(distanceToNode)){
+        if (Array.isArray(distanceToNode)) {
             mediator = distanceToNode[1]
             distanceToNode = distanceToNode[0]
         }
 
-        if(mediator === source){
+        if (mediator === source) {
             distanceToNode = distanceToSource + sourceToNode
             myVector[node] = sourceToNode === null ? Number.POSITIVE_INFINITY : [distanceToNode, source]
         } else if (distanceToSource + sourceToNode < distanceToNode && sourceToNode !== null)
@@ -93,5 +138,6 @@ const distanceVectorReceive = async (message, source, destine) => {
 
 module.exports = {
     distanceVectorReceive,
-    distanceVectorSend
+    distanceVectorStart,
+    distanceVectorSend,
 };

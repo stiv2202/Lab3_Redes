@@ -1,7 +1,7 @@
 const { JSDOM } = require('jsdom');
 const { Strophe, $msg, $pres } = require('strophe.js');
 const { ALGORITHM } = require('./consts');
-const { distanceVectorReceive } = require('./distance-vector');
+const { distanceVectorReceive, distanceVectorSend } = require('./distance-vector');
 const { setSendMessage, setSendEchoMessage } = require('./mediator.js');
 const { decodeHtmlEntities } = require('./utils.js');
 const { dijkstraSend } = require('./dijkstra/index.js');
@@ -83,22 +83,22 @@ const onMessage = (message) => {
                     }
                     break;
                 case 'echo':
-                    console.log('Mensaje de eco recibido.')
                     const newMessage = {
                         type: 'echo_response'
                     };
                     sendMessage(to.split('@')[0], from, JSON.stringify(newMessage))
-                    console.log('Mensaje de eco respondido.')
                     break;
                 case 'echo_response':
-                    console.log('Mensaje de eco devuelto.')
                     break;
                 case 'message':
-                    console.log(`Mensaje recibido de ${jsonBody.from}: ${jsonBody.table ?? ''}`);
-
-                    case 'dijkstra':
-                        dijkstraSend(jsonBody);
-                        break;
+                    switch (ALGORITHM) {
+                        case 'dijkstra':
+                            dijkstraSend(jsonBody);
+                            break;
+                        case 'distance-vector':
+                            distanceVectorSend(jsonBody);
+                            break;
+                    }
 
                     break;
                 default:
@@ -152,7 +152,7 @@ const sendEchoMessage = (myNode, targetNode) => {
         setTimeout(() => {
             connection.deleteHandler(handler);
             reject(new Error('Echo timeout'));
-        }, 15000);
+        }, 5000);
     });
 }
 
