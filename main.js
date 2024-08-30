@@ -49,10 +49,11 @@ const main = async () => {
                 case 'flooding':
                     message = {
                         id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
-                        type: "weights",
+                        type: "message",
+                        from: 'nadie. Nodo inicial',
                         to: `${name}@alumchat.lol`, // Nombre del nodo inicial
                         hops: 10,
-                        table: `${name} says hello!`
+                        payload: `${name} says hello!`
                     }
 
                     flooding(message);
