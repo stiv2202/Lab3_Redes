@@ -31,10 +31,11 @@ const main = async () => {
     switch (ALGORITHM) {
         case 'flooding':
             message = {
-                id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
-                type: "info",
+                id: `${name}-${Date.now()}`,
+                from: 'Nadie, nodo inicial',
+                type: "message",
                 to: `${name}@alumchat.lol`, // Nombre del nodo inicial
-                hops: 10,
+                hops: 3,
                 payload: `${name} says hello!`
             }
 
