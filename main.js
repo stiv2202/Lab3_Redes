@@ -89,11 +89,12 @@ const main = async () => {
 
 
                     break;
-                    case 'link-state':
+                case 'link-state':
                         input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
                             message = {
-                                ...message, // Retener las propiedades actuales del mensaje
+                                type: "message",
                                 to: `${destinationName}@alumchat.lol`,
+                                from: `${name}@alumchat.lol`,
                                 data: await input("Ingrese el mensaje a enviar: "),
                             };
     

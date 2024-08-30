@@ -6,6 +6,7 @@ const { setSendMessage, setSendEchoMessage } = require('./mediator.js');
 const { decodeHtmlEntities } = require('./utils.js');
 const { dijkstraSend } = require('./dijkstra/index.js');
 const { flooding } = require('./flooding/index.js');
+const { linkStateSend } = require('./link-state/index.js');
 const XMPP_SERVER = 'ws://alumchat.lol:7070/ws';
 const DOMAIN_NAME = 'alumchat.lol';
 const RESOURCE = 'LAB_3';
@@ -98,8 +99,14 @@ const onMessage = (message) => {
                         case 'distance-vector':
                             distanceVectorSend(jsonBody);
                             break;
+                        case 'link-state':
+                            linkStateSend(jsonBody);
+                            break;
                     }
 
+                    break;
+                case 'link-state':
+                    linkStateSend(jsonBody);
                     break;
                 default:
                     console.log("Tipo no válido. Imprimiendo mensaje en crudo.")
