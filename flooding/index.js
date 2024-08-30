@@ -35,7 +35,7 @@ const flooding = async (message) => { // Se asume que el formato de message vien
         });
 
         if (message.hops <= 0) {
-            console.log(`Mensaje recibido con hops agotados: ${message.payload}`);
+            console.log(`Mensaje recibido con hops agotados: ${message.table}`);
             return;
         }
     };

@@ -1,7 +1,8 @@
 const readline = require('readline');
 const fs = require('fs');
 const { CustomError } = require('./CustomError.js')
-const { domainName } = require('./consts.js')
+const { domainName } = require('./consts.js');
+const { sendEchoMessage } = require('./mediator.js')
 
 const readJsonFile = (filePath) => {
     return new Promise((resolve, reject) => {
@@ -65,6 +66,27 @@ const getRandomNumber = (min, max, integer = false) => {
     return number
 }
 
+const infiniteTableDV = async (node, names) => {
+    const vector = {}
+    const data = await readJsonFile('topo.json');
+    const config = data.config;
+    const nodes = Object.keys(config)
+
+    for (const n of nodes) {
+        if (n === node) {
+            vector[n] = 0;
+        } else {
+            vector[n] = Number.POSITIVE_INFINITY;
+        }
+    }
+
+    const table = {
+        [node]: vector
+    }
+
+    return table
+}
+
 const initTableDV = async (node, names) => {
     const vector = {}
     const data = await readJsonFile('topo.json');
@@ -73,14 +95,22 @@ const initTableDV = async (node, names) => {
     let neighbors = Object.values(config).at(Object.keys(config).indexOf(node))
     neighbors = neighbors.map(n => names[n])
 
-    nodes.forEach(n => {
-        if (n === node)
-            vector[n] = 0
-        else if (neighbors.includes(names[n]))
-            vector[n] = getRandomNumber(1, 10, true)
-        else
-            vector[n] = null
-    });
+    for (const n of nodes) {
+        if (n === node) {
+            vector[n] = 0;
+        } else if (neighbors.includes(names[n])) {
+            // vector[n] = getRandomNumber(1, 10, true)
+            try {
+                const echoTime = await sendEchoMessage(names[node], names[n]);
+                vector[n] = echoTime;
+            } catch (err) {
+                console.error(`Error obteniendo distancia de ${names[n]}: ${err.message}`);
+                vector[n] = Number.POSITIVE_INFINITY;
+            }
+        } else {
+            vector[n] = null;
+        }
+    }
 
     const table = {
         [node]: vector
@@ -109,6 +139,10 @@ const decodeHtmlEntities = (str) => {
         .replace(/&gt;/g, '>');
 };
 
+const isTableEmpty = (table) => {
+    return Object.keys(table).length === 0;
+}
+
 module.exports = {
     readJsonFile,
     input,
@@ -117,4 +151,6 @@ module.exports = {
     getRandomNumber,
     decodeHtmlEntities,
     initTableDV,
+    infiniteTableDV,
+    isTableEmpty,
 };

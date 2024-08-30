@@ -8,14 +8,10 @@ const startNode = async () => {
 
     const node = await verifyName(username);
     if (!node) {
-        process.exit(1);
+        throw new Error('Nodo no válido');
     }
 
-    login(username, password);
-
-    console.log(`ESTE ES EL NODO ${node}`);
-
-    return [username, node]
+    return await login(username, password, node);
 }
 
 // startNode();
