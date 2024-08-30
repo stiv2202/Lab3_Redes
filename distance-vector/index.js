@@ -105,7 +105,8 @@ const distanceVectorReceive = async (message, source, destine) => {
     }
     currentTable[source] = info
     const myVector = currentTable[myNode]
-    const distanceToSource = typeof myVector[source] === 'number' ? myVector[source] : myVector[source][0]
+    const distanceToSource = myVector[source] === null ? Number.POSITIVE_INFINITY
+        : typeof myVector[source] === 'number' ? myVector[source] : myVector[source][0]
     info[myNode] = info[myNode] === null ? Number.POSITIVE_INFINITY : info[myNode]
     myVector[source] = myVector[source] <= info[myNode] ? myVector[source] : typeof info[myNode] === 'number' ? info[myNode] : info[myNode][0]
 
