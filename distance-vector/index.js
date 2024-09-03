@@ -7,7 +7,7 @@ const lastUpdate = {};
 
 const waitForTableUpdate = (startNode, destinationNode, timeout = 1000000) => {
     return new Promise((resolve, reject) => {
-        const interval = 100; // Check every 100ms
+        const interval = 100;
         const start = Date.now();
 
         const checkTable = () => {
@@ -30,6 +30,11 @@ const distanceVectorSend = async (message) => {
     const startNode = getNode()
     const destinationNode = Object.keys(names).find((key) => names[key] === message.to)
 
+    if (!destinationNode){
+        console.error(`\nEl nodo ${message.to} no forma parte de la red.\n`);
+        return
+    }
+
     if (startNode === destinationNode) {
         console.log("El mensaje llegó a su destino!: ", message);
         return;
@@ -45,7 +50,7 @@ const distanceVectorSend = async (message) => {
 
         console.log(`Mensaje transferido a ${nextNode}: ${names[nextNode]}`)
     } catch (error) {
-        console.error(error.message);
+        console.error(`\n${error}\n`);
     }
 }
 
