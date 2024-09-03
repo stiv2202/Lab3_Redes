@@ -43,17 +43,16 @@ const main = async () => {
 
         console.log("Presione Enter para iniciar el programa");
         process.stdin.once('data', async () => {
-            console.log(`Iniciando algoritmo ${ALGORITHM}...`);
+            console.log(`Iniciando algoritmo '${ALGORITHM}'...`);
 
             switch (ALGORITHM) {
                 case 'flooding':
                     message = {
-                        id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
                         type: "message",
                         from: 'nadie. Nodo inicial',
                         to: `${name}@alumchat.lol`, // Nombre del nodo inicial
                         hops: 10,
-                        payload: `${name} says hello!`
+                        data: `${name} says hello!`
                     }
 
                     flooding(message);

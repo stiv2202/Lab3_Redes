@@ -73,10 +73,6 @@ const onMessage = (message) => {
                             distanceVectorReceive(jsonBody, from, to)
                             break;
 
-                        // Verificar que el resto de algoritmos apliquen también para este type.
-                        case 'flooding':
-                            flooding(jsonBody);
-                            break;
                         default:
                             console.log("Algoritmo no válido. Imprimiendo mensaje en crudo.")
                             console.log(`Mensaje recibido de ${from}: ${body}`);
@@ -91,6 +87,12 @@ const onMessage = (message) => {
                     break;
                 case 'echo_response':
                     break;
+                case 'send_routing':
+                    switch (ALGORITHM) {
+                        case 'flooding':
+                            flooding(jsonBody);
+                            break;
+                    }
                 case 'message':
                     switch (ALGORITHM) {
                         case 'dijkstra':
@@ -101,6 +103,9 @@ const onMessage = (message) => {
                             break;
                         case 'link-state':
                             linkStateSend(jsonBody);
+                            break;
+                        case 'flooding':
+                            flooding(jsonBody);
                             break;
                     }
 
