@@ -42,7 +42,7 @@ const main = async () => {
         }
 
         console.log("Presione Enter para iniciar el programa");
-        process.stdin.once('data', () => {
+        process.stdin.once('data', async () => {
             console.log(`Iniciando algoritmo ${ALGORITHM}...`);
 
             switch (ALGORITHM) {
@@ -59,17 +59,26 @@ const main = async () => {
                     break;
                 case 'distance-vector':
                     distanceVectorStart(name, node, names)
-                    input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
-                        message = {
-                            type: "message",
-                            to: `${destinationName}@alumchat.lol`,
-                            from: `${name}@alumchat.lol`,
-                            data: await input("Ingrese el mensaje a enviar: "),
-                        }
+                    repeat = true
+                    while (repeat) {
+                        await input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
+                            const message = {
+                                type: "message",
+                                to: `${destinationName}@alumchat.lol`,
+                                from: `${name}@alumchat.lol`,
+                                data: await input("Ingrese el mensaje a enviar: "),
+                            };
 
-                        console.log("Enviando mensaje con distance-vector...")
-                        distanceVectorSend(message)
-                    });
+                            console.log("Enviando mensaje con distance-vector...");
+                            await distanceVectorSend(message);
+
+                            // Pregunta si se desea enviar otro mensaje
+                            const sendAnother = await input("¿Quieres enviar otro mensaje? (s): ");
+                            if (sendAnother.toLowerCase() !== "s" && sendAnother !== "") {
+                                repeat = false;
+                            }
+                        });
+                    }
                     break;
 
                 case 'dijkstra':
@@ -88,22 +97,22 @@ const main = async () => {
 
 
                     break;
-                    case 'link-state':
-                        input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
-                            message = {
-                                ...message, // Retener las propiedades actuales del mensaje
-                                to: `${destinationName}@alumchat.lol`,
-                                data: await input("Ingrese el mensaje a enviar: "),
-                            };
-    
-                            console.log("Enviando mensaje con link-state...");
-                            linkStateSend(message);
-                        });
-                        break;
-    
-                    default:
-                        console.log("Algoritmo no válido.");
-                        break;
+                case 'link-state':
+                    input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
+                        message = {
+                            ...message, // Retener las propiedades actuales del mensaje
+                            to: `${destinationName}@alumchat.lol`,
+                            data: await input("Ingrese el mensaje a enviar: "),
+                        };
+
+                        console.log("Enviando mensaje con link-state...");
+                        linkStateSend(message);
+                    });
+                    break;
+
+                default:
+                    console.log("Algoritmo no válido.");
+                    break;
             }
         });
     } catch (error) {
