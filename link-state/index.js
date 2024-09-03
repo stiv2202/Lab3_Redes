@@ -7,6 +7,7 @@ class LinkState {
     this.topology = {};
     this.distances = {};
     this.previous = {};
+    this.version = 1;
   }
 
   initialize(startNode) {
@@ -25,6 +26,15 @@ class LinkState {
         this.topology[neighbor] = {};
       }
       this.topology[neighbor][fromNode] = weights[neighbor];
+    }
+    this.version++;
+  }
+
+  receiveWeights(fromNode, weights, version) {
+    console.log(`Recibiendo tabla de pesos de ${fromNode}`);
+    if (!this.version || this.version < version) {
+      this.updateTopology(fromNode, weights);
+      this.version = version;
     }
   }
 
@@ -75,7 +85,7 @@ class LinkState {
 }
 
 /**
- * Calcular los pesos hacia los vecinos 
+ * Calcular los pesos hacia los vecinos
  * @param {string} currentNode Nodo actual.
  * @param {Object} topology Topología de la red.
  * @param {Object} names Mapa de nombres de nodos a direcciones XMPP.
@@ -111,13 +121,14 @@ const calculateNeighborWeights = async (currentNode, topology, names) => {
  * @param {Object} names Mapa de nombres de nodos a direcciones XMPP.
  */
 const broadcastLinkState = async (currentNode, neighbors, names) => {
+  const linkStateMessage = {
+    type: "weights",
+    table: neighbors,
+    version: 1,
+    from: names[currentNode],
+  };
+  
   for (let neighbor in neighbors) {
-    const linkStateMessage = {
-      type: "send_routing",
-      from: names[currentNode],
-      to: names[neighbor],
-      weights: neighbors,
-    };
     console.log(`Enviando estado de enlace a ${names[neighbor]}...`);
     sendMessage(names[currentNode], names[neighbor], JSON.stringify(linkStateMessage));
   }
