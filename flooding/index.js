@@ -21,11 +21,12 @@ const flooding = async (message) => { // Se asume que el formato de message vien
         neighbors.forEach(n => {
             if (message.hops <= 0) return;
             
-            console.log(`Enviando mensaje a ${n}`);
             if (names[n] === originalFrom) {
                 console.log(`Saltando mensaje`);
                 return;
             }
+
+            console.log(`Enviando mensaje a ${n}`);
 
             message.from = name;
             message.hops -= 1;

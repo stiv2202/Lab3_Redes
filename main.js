@@ -49,10 +49,11 @@ const main = async () => {
                 case 'flooding':
                     message = {
                         id: `${name}-${Date.now()}`, // Un ID único para cada mensaje
-                        type: "weights",
+                        type: "message",
+                        from: 'nadie. Nodo inicial',
                         to: `${name}@alumchat.lol`, // Nombre del nodo inicial
                         hops: 10,
-                        table: `${name} says hello!`
+                        payload: `${name} says hello!`
                     }
 
                     flooding(message);
@@ -100,8 +101,9 @@ const main = async () => {
                 case 'link-state':
                     input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
                         message = {
-                            ...message, // Retener las propiedades actuales del mensaje
+                            type: "message",
                             to: `${destinationName}@alumchat.lol`,
+                            from: `${name}@alumchat.lol`,
                             data: await input("Ingrese el mensaje a enviar: "),
                         };
 
