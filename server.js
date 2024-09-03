@@ -99,13 +99,13 @@ const onMessage = (message) => {
                         case 'distance-vector':
                             distanceVectorSend(jsonBody);
                             break;
-                        case 'link-state':
+                        case 'send_routing':
                             linkStateSend(jsonBody);
                             break;
                     }
 
                     break;
-                case 'link-state':
+                case 'send_routing':
                     linkStateSend(jsonBody);
                     break;
                 default:
