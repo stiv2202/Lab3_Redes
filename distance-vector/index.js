@@ -7,7 +7,7 @@ const lastUpdate = {};
 
 const waitForTableUpdate = (startNode, destinationNode, timeout = 1000000) => {
     return new Promise((resolve, reject) => {
-        const interval = 100; // Check every 100ms
+        const interval = 100;
         const start = Date.now();
 
         const checkTable = () => {

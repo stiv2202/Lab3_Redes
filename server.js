@@ -21,7 +21,7 @@ const login = (username, password, node) => {
     return new Promise((resolve, reject) => {
         let connectionTimeout = setTimeout(() => {
             reject(new Error('Connection timeout'));
-        }, 30000); // 30 seconds timeout
+        }, 30000);
 
         connection.connect(`${username}@${DOMAIN_NAME}/${RESOURCE}`, password, (status) => {
             switch (status) {

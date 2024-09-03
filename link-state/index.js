@@ -26,7 +26,7 @@ class LinkState {
       unvisited.delete(currentNode);
 
       for (let neighbor of this.topology[currentNode]) {
-        let alt = this.distances[currentNode] + 1; // Assuming all edges have weight 1
+        let alt = this.distances[currentNode] + 1;
         if (alt < this.distances[neighbor]) {
           this.distances[neighbor] = alt;
           this.previous[neighbor] = currentNode;
