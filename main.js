@@ -53,7 +53,7 @@ const main = async () => {
                         from: 'nadie. Nodo inicial',
                         to: `${name}@alumchat.lol`, // Nombre del nodo inicial
                         hops: 10,
-                        payload: `${name} says hello!`
+                        data: `${name} says hello!`
                     }
 
                     flooding(message);
