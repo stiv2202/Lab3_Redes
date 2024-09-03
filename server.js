@@ -17,6 +17,8 @@ global.window = window;
 
 const connection = new Strophe.Connection(XMPP_SERVER);
 
+let echoSentTimes = {};
+
 const login = (username, password, node) => {
     return new Promise((resolve, reject) => {
         let connectionTimeout = setTimeout(() => {
@@ -61,29 +63,31 @@ const onMessage = (message) => {
     const bodyElement = message.getElementsByTagName('body')[0];
     if (bodyElement) {
         let body = Strophe.getText(bodyElement);
-        body = decodeHtmlEntities(body)
+        body = decodeHtmlEntities(body);
 
         try {
-            const jsonBody = JSON.parse(body)
+            const jsonBody = JSON.parse(body);
 
             switch (jsonBody.type) {
                 case 'weights':
                     switch (ALGORITHM) {
                         case 'distance-vector':
-                            distanceVectorReceive(jsonBody, from, to)
+                            distanceVectorReceive(jsonBody, from, to);
                             break;
-
+                        case 'link-state':
+                            linkState.receiveWeights(jsonBody.from, jsonBody.table, jsonBody.version);
+                            break;
                         default:
-                            console.log("Algoritmo no válido. Imprimiendo mensaje en crudo.")
+                            console.log("Algoritmo no válido. Imprimiendo mensaje en crudo.");
                             console.log(`Mensaje recibido de ${from}: ${body}`);
                             break;
                     }
                     break;
                 case 'echo':
-                    const newMessage = {
+                    const echoResponse = {
                         type: 'echo_response'
                     };
-                    sendMessage(to.split('@')[0], from, JSON.stringify(newMessage))
+                    sendMessage(to.split('@')[0], from, JSON.stringify(echoResponse));
                     break;
                 case 'echo_response':
                     break;
@@ -114,13 +118,12 @@ const onMessage = (message) => {
                     linkStateSend(jsonBody);
                     break;
                 default:
-                    console.log("Tipo no válido. Imprimiendo mensaje en crudo.")
+                    console.log("Tipo no válido. Imprimiendo mensaje en crudo.");
                     console.log(`Mensaje recibido de ${from}: ${body}`);
                     break;
             }
 
         } catch (e) {
-            // El mensaje recibido no es de tipo JSON o no es válido
             console.log(`Mensaje recibido de ${from}: ${body}`);
         }
     }
@@ -133,6 +136,8 @@ const sendEchoMessage = (myNode, targetNode) => {
     to = `${targetNode}${RESOURCE.trim() != '' ? `/${RESOURCE}` : ''}`;
     return new Promise((resolve, reject) => {
         const start = Date.now();
+        echoSentTimes[targetNode] = start;
+
         const echoMessage = {
             type: "echo",
         }
@@ -147,7 +152,7 @@ const sendEchoMessage = (myNode, targetNode) => {
             const bodyElement = msg.getElementsByTagName('body')[0];
             if (bodyElement) {
                 let body = Strophe.getText(bodyElement);
-                body = decodeHtmlEntities(body)
+                body = decodeHtmlEntities(body);
 
                 try {
                     const jsonBody = JSON.parse(body)
