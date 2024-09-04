@@ -1,0 +1,37 @@
+{
+    "type": "topo",
+    "config": {
+        "mor21762-lab3-1@alumchat.lol": [
+            "mor21762-lab3-4@alumchat.lol",
+            "mor21762-lab3-5@alumchat.lol"
+        ],
+        "mor21762-lab3-2@alumchat.lol": [
+            "mor21762-lab3-4@alumchat.lol",
+            "mor21762-lab3-6@alumchat.lol",
+            "mor21762-lab3-7@alumchat.lol"
+        ],
+        "mor21762-lab3-3@alumchat.lol": [
+            "mor21762-lab3-5@alumchat.lol",
+            "mor21762-lab3-7@alumchat.lol"
+        ],
+        "mor21762-lab3-4@alumchat.lol": [
+            "mor21762-lab3-1@alumchat.lol",
+            "mor21762-lab3-2@alumchat.lol",
+            "mor21762-lab3-7@alumchat.lol"
+        ],
+        "mor21762-lab3-5@alumchat.lol": [
+            "mor21762-lab3-1@alumchat.lol",
+            "mor21762-lab3-3@alumchat.lol",
+            "mor21762-lab3-6@alumchat.lol"
+        ],
+        "mor21762-lab3-6@alumchat.lol": [
+            "mor21762-lab3-2@alumchat.lol",
+            "mor21762-lab3-5@alumchat.lol"
+        ],
+        "mor21762-lab3-7@alumchat.lol": [
+            "mor21762-lab3-2@alumchat.lol",
+            "mor21762-lab3-3@alumchat.lol",
+            "mor21762-lab3-4@alumchat.lol"
+        ]
+    }
+}
