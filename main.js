@@ -49,24 +49,22 @@ const main = async () => {
                 case 'flooding':
                     repeat = true
                     while (repeat) {
-                        await input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
-                            const message = {
-                                type: "message",
-                                to: `${destinationName}@alumchat.lol`,
-                                from: `${name}@alumchat.lol`,
-                                data: await input("Ingrese el mensaje a enviar: "),
-                                hops: 5
-                            };
+                        const message = {
+                            type: "message",
+                            to: null,
+                            from: `${name}@alumchat.lol`,
+                            data: await input("Ingrese el mensaje a enviar: "),
+                            hops: 5
+                        };
 
-                            console.log("Enviando mensaje con flooding...");
-                            await flooding(message);
+                        console.log("Enviando mensaje con flooding...");
+                        await flooding(message);
 
-                            // Pregunta si se desea enviar otro mensaje
-                            const sendAnother = await input("¿Quieres enviar otro mensaje? (s): ");
-                            if (sendAnother.toLowerCase() !== "s" && sendAnother !== "") {
-                                repeat = false;
-                            }
-                        });
+                        // Pregunta si se desea enviar otro mensaje
+                        const sendAnother = await input("¿Quieres enviar otro mensaje? (s): ");
+                        if (sendAnother.toLowerCase() !== "s" && sendAnother !== "") {
+                            repeat = false;
+                        }
                     }
                     break;
                 case 'distance-vector':
