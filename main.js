@@ -51,12 +51,13 @@ const main = async () => {
                     while (repeat) {
                         const message = {
                             type: "message",
-                            to: null,
+                            to: `${name}@alumchat.lol`,
                             from: `${name}@alumchat.lol`,
                             data: await input("Ingrese el mensaje a enviar: "),
                             hops: 3
                         };
 
+                        message.hops = message.hops + 1;
                         console.log("Enviando mensaje con flooding...");
                         await flooding(message);
 
