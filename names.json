@@ -1,1 +1,10 @@
-{"type":"names", "config":{"A": "kie21581-lab3-1@alumchat.lol", "B": "mor21762-lab3-1@alumchat.lol", "C": "gue21781-lab3-1@alumchat.lol", "D": "zam21780-lab3-1.lol"} }
+{
+    "type": "names",
+    "config": {
+        "A": "gue21781-lab3-4@alumchat.lol",
+        "B": "gue21781-lab3-5@alumchat.lol",
+        "C": "gue21781-lab3-1@alumchat.lol",
+        "D": "gue21781-lab3-2@alumchat.lol",
+        "E": "gue21781-lab3-3@alumchat.lol"
+    }
+}
