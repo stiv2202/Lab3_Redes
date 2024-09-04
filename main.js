@@ -54,7 +54,7 @@ const main = async () => {
                             to: null,
                             from: `${name}@alumchat.lol`,
                             data: await input("Ingrese el mensaje a enviar: "),
-                            hops: 5
+                            hops: 3
                         };
 
                         console.log("Enviando mensaje con flooding...");
