@@ -74,9 +74,6 @@ const onMessage = (message) => {
                         case 'distance-vector':
                             distanceVectorReceive(jsonBody, from, to);
                             break;
-                        case 'flooding':
-                            flooding(jsonBody);
-                            break;
                         case 'link-state':
                             linkState.receiveWeights(jsonBody.from, jsonBody.table, jsonBody.version);
                             break;
@@ -95,10 +92,30 @@ const onMessage = (message) => {
                 case 'echo_response':
                     break;
                 case 'send_routing':
-                    linkStateSend(jsonBody);
-                    break;
+                    switch (ALGORITHM) {
+                        case 'flooding':
+                            flooding(jsonBody);
+                            break;
+                    }
                 case 'message':
-                    console.log(`Mensaje recibido: ${jsonBody.data}`);
+                    switch (ALGORITHM) {
+                        case 'dijkstra':
+                            dijkstraSend(jsonBody);
+                            break;
+                        case 'distance-vector':
+                            distanceVectorSend(jsonBody);
+                            break;
+                        case 'link-state':
+                            linkStateSend(jsonBody);
+                            break;
+                        case 'flooding':
+                            flooding(jsonBody);
+                            break;
+                    }
+
+                    break;
+                case 'link-state':
+                    linkStateSend(jsonBody);
                     break;
                 default:
                     console.log("Tipo no válido. Imprimiendo mensaje en crudo.");

@@ -11,7 +11,8 @@ const flooding = async (message) => { // Se asume que el formato de message vien
 
     const originalFrom = message.from;
 
-    console.log(`Mensaje recibido de ${originalFrom}\n`);
+    if (name)
+        console.log(`Mensaje recibido de ${originalFrom}:\n${message.data}`);
 
     let [_, neighbors] = await initTable(node);
 
@@ -22,11 +23,8 @@ const flooding = async (message) => { // Se asume que el formato de message vien
             if (message.hops <= 0) return;
             
             if (names[n] === originalFrom) {
-                console.log(`Saltando mensaje`);
                 return;
             }
-
-            console.log(`Enviando mensaje a ${n}`);
 
             message.from = name;
             message.hops -= 1;
@@ -35,14 +33,14 @@ const flooding = async (message) => { // Se asume que el formato de message vien
         });
 
         if (message.hops <= 0) {
-            console.log(`Mensaje recibido con hops agotados: ${message.table}`);
+            console.log(`Mensaje recibido con hops agotados.`);
             return;
         }
     };
 
     setTimeout(() => {
         floodMessage(message);
-    }, 3000);
+    }, 100);
 }
 
 module.exports = {
