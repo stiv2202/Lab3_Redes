@@ -65,11 +65,10 @@ const distanceVectorStart = async (name, node, names) => {
     setInterval(() => {
 
         message.table = table[node];
-        console.log('vector: ', message.table)
         neighbors.forEach(n => {
             sendMessage(name, n, JSON.stringify(message));
         });
-    }, 10000);
+    }, 3000);
 }
 
 const verifyRoutes = (table, lastUpdate, myNode) => {
@@ -138,8 +137,6 @@ const distanceVectorReceive = async (message, source, destine) => {
     currentTable[myNode] = myVector
 
     currentTable = verifyRoutes(currentTable, lastUpdate, myNode)
-
-    console.log('tabla: ', currentTable)
 
     updateTable(currentTable)
 }
