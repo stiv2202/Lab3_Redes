@@ -47,15 +47,27 @@ const main = async () => {
 
             switch (ALGORITHM) {
                 case 'flooding':
-                    message = {
-                        type: "message",
-                        from: 'nadie. Nodo inicial',
-                        to: `${name}@alumchat.lol`, // Nombre del nodo inicial
-                        hops: 10,
-                        data: `${name} says hello!`
-                    }
+                    repeat = true
+                    while (repeat) {
+                        await input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
+                            const message = {
+                                type: "message",
+                                to: `${destinationName}@alumchat.lol`,
+                                from: `${name}@alumchat.lol`,
+                                data: await input("Ingrese el mensaje a enviar: "),
+                                hops: 5
+                            };
 
-                    flooding(message);
+                            console.log("Enviando mensaje con flooding...");
+                            await flooding(message);
+
+                            // Pregunta si se desea enviar otro mensaje
+                            const sendAnother = await input("¿Quieres enviar otro mensaje? (s): ");
+                            if (sendAnother.toLowerCase() !== "s" && sendAnother !== "") {
+                                repeat = false;
+                            }
+                        });
+                    }
                     break;
                 case 'distance-vector':
                     distanceVectorStart(name, node, names)

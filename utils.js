@@ -136,7 +136,7 @@ const decodeHtmlEntities = (str) => {
     return str.replace(/&quot;/g, '"')
         .replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<')
-        .replace(/&apos;/g, "'")
+        .replace(/&apos;/g, '"')
         .replace(/&gt;/g, '>');
 };
 
