@@ -94,7 +94,7 @@ const onMessage = (message) => {
                 case 'send_routing':
                     switch (ALGORITHM) {
                         case 'flooding':
-                            flooding(jsonBody);
+                            flooding(from, to, jsonBody);
                             break;
                     }
                 case 'message':
@@ -109,7 +109,7 @@ const onMessage = (message) => {
                             linkStateSend(jsonBody);
                             break;
                         case 'flooding':
-                            flooding(jsonBody);
+                            flooding(from, to, jsonBody);
                             break;
                     }
 

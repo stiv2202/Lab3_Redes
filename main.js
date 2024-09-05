@@ -49,23 +49,24 @@ const main = async () => {
                 case 'flooding':
                     repeat = true
                     while (repeat) {
-                        const message = {
-                            type: "message",
-                            to: `${name}@alumchat.lol`,
-                            from: `${name}@alumchat.lol`,
-                            data: await input("Ingrese el mensaje a enviar: "),
-                            hops: 3
-                        };
+                        await input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
+                            const message = {
+                                type: "message",
+                                to: `${destinationName}@alumchat.lol`,
+                                from: `${name}@alumchat.lol`,
+                                data: await input("Ingrese el mensaje a enviar:"),
+                                hops: parseInt(await input("Ingrese el número de saltos: "))
+                            };
 
-                        message.hops = message.hops + 1;
-                        console.log("Enviando mensaje con flooding...");
-                        await flooding(message);
+                            console.log("Enviando mensaje con flooding...");
+                            await flooding('Nodo inicial', `${name}@alumchat.lol`, message);
 
-                        // Pregunta si se desea enviar otro mensaje
-                        const sendAnother = await input("¿Quieres enviar otro mensaje? (s): ");
-                        if (sendAnother.toLowerCase() !== "s" && sendAnother !== "") {
-                            repeat = false;
-                        }
+                            // Pregunta si se desea enviar otro mensaje
+                            const sendAnother = await input("¿Quieres enviar otro mensaje? (s): ");
+                            if (sendAnother.toLowerCase() !== "s" && sendAnother !== "") {
+                                repeat = false;
+                            }
+                        });
                     }
                     break;
                 case 'distance-vector':
