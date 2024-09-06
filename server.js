@@ -125,6 +125,7 @@ const onMessage = (message) => {
 
         } catch (e) {
             console.log(`Mensaje recibido de ${from}: ${body}`);
+            console.error('Error: ',e)
         }
     }
 
@@ -158,7 +159,7 @@ const sendEchoMessage = (myNode, targetNode) => {
                     const jsonBody = JSON.parse(body)
                     if (jsonBody.type === 'echo_response') {
                         connection.deleteHandler(handler);
-                        resolve(Date.now() - start);
+                        resolve((Date.now() - start) / 1000);
                     }
                 } catch {
                     console.error('El mensaje recibido no es de tipo JSON.')

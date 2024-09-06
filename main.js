@@ -73,15 +73,22 @@ const main = async () => {
                     repeat = true
                     while (repeat) {
                         await input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
-                            const message = {
-                                type: "message",
-                                to: `${destinationName}@alumchat.lol`,
-                                from: `${name}@alumchat.lol`,
-                                data: await input("Ingrese el mensaje a enviar: "),
-                            };
+                            const destination = `${destinationName}@alumchat.lol`
+                            const destinationNode = Object.keys(names).find((key) => names[key] === destination)
+                            if (!destinationNode) {
+                                console.error(`El usuario ${destination} no forma parte de la red.`)
+                            }
+                            else {
+                                const message = {
+                                    type: "message",
+                                    to: Object.keys(names).find((key) => names[key] === destination),
+                                    from: node,
+                                    data: await input("Ingrese el mensaje a enviar: "),
+                                };
 
-                            console.log("Enviando mensaje con distance-vector...");
-                            await distanceVectorSend(message);
+                                console.log("Enviando mensaje con distance-vector...");
+                                await distanceVectorSend(message);
+                            }
 
                             // Pregunta si se desea enviar otro mensaje
                             const sendAnother = await input("¿Quieres enviar otro mensaje? (s): ");

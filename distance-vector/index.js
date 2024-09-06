@@ -28,10 +28,11 @@ const waitForTableUpdate = (startNode, destinationNode, timeout = 1000000) => {
 const distanceVectorSend = async (message) => {
     const names = (await readJsonFile("./names.json")).config
     const startNode = getNode()
-    const destinationNode = Object.keys(names).find((key) => names[key] === message.to)
+    const destinationNode = message.to
+    const destination = names[destinationNode]
 
     if (!destinationNode){
-        console.error(`\nEl nodo ${message.to} no forma parte de la red.\n`);
+        console.error(`\nEl nodo ${destination} no forma parte de la red.\n`);
         return
     }
 
@@ -58,7 +59,7 @@ const distanceVectorStart = async (name, node, names) => {
     message = {
         type: "weights",
         version: 0,
-        from: `${name}@alumchat.lol`,
+        from: node,
     }
     const [table, neighbors] = await initTableDV(node, names);
     updateTable(table)
