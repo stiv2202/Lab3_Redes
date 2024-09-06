@@ -94,11 +94,9 @@ const onMessage = (message) => {
                 case 'send_routing':
                     switch (ALGORITHM) {
                         case 'flooding':
-                            console.log(`Nodo intermediario (${jsonBody.from} -> ${jsonBody.to}), recibido de ${from}, reenviando a siguiente nodo.`);
-                            flooding(from, to, jsonBody);
+                            flooding(jsonBody);
                             break;
                     }
-                    break;
                 case 'message':
                     switch (ALGORITHM) {
                         case 'dijkstra':
@@ -111,7 +109,7 @@ const onMessage = (message) => {
                             linkStateSend(jsonBody);
                             break;
                         case 'flooding':
-                            console.log("\x1b[32m%s\x1b[0m",`Mensaje de ${jsonBody.from} :`, "\x1b[0m", `${jsonBody.data}\n(Recibido desde el nodo ${from})`);
+                            flooding(jsonBody);
                             break;
                     }
 
@@ -126,8 +124,7 @@ const onMessage = (message) => {
             }
 
         } catch (e) {
-            console.log(`Mensaje recibido de ${from}: ${body}`);
-            console.error('Error: ',e)
+            console.log('ERROR: ',e)
         }
     }
 

@@ -108,7 +108,7 @@ const initTableDV = async (node, names) => {
                 vector[n] = Number.POSITIVE_INFINITY;
             }
         } else {
-            vector[n] = null;
+            vector[n] = Number.POSITIVE_INFINITY;
         }
     }
 
@@ -137,7 +137,8 @@ const decodeHtmlEntities = (str) => {
         .replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<')
         .replace(/&apos;/g, '"')
-        .replace(/&gt;/g, '>');
+        .replace(/&gt;/g, '>')
+        .replace(/Infinity/g, 'null');
 };
 
 const isTableEmpty = (table) => {
