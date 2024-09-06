@@ -1,13 +1,9 @@
 {
-    "type": "names",
-    "config": {
-        "A": "sic21757@alumchat.lol",
-        "B": "zam21780@alumchat.lol",
-        "C": "gue21781@alumchat.lol",
-        "D": "mor21762@alumchat.lol",
-        "E": "kie21581@alumchat.lol",
-        "F": "tox21276-test@alumchat.lol", 
-        "G": "fer21747@alumchat.lol", 
-        "H": "mor21785@alumchat.lol"
-    }
+	"type": "names",
+	"config": {
+		"A": "mor21762@alumchat.lol",
+		"B": "zam21780@alumchat.lol",
+		"C": "kie21581@alumchat.lol",
+		"D": "gue21781@alumchat.lol"
+	}
 }
