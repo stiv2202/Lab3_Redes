@@ -140,6 +140,8 @@ const distanceVectorReceive = async (message, source, destine) => {
 
     currentTable = verifyRoutes(currentTable, lastUpdate, myNode)
 
+    console.log('Tabla: ', currentTable)
+
     updateTable(currentTable)
 }
 
