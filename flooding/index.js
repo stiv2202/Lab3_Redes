@@ -49,7 +49,7 @@ const flooding = async (previousNodeName, currNodeName, message) => { // Se asum
 
     // Función para enviar un mensaje a todos los vecinos
     const floodMessage = (message) => { 
-
+        const nextHops = message.hops - 1;
         neighbors.forEach(n => {
             if (message.hops <= 0) return;
             
@@ -57,7 +57,7 @@ const flooding = async (previousNodeName, currNodeName, message) => { // Se asum
                 return;
             }
 
-            message.hops -= 1;
+            message.hops = nextHops;
             sendMessage(currentNodeName, names[n], JSON.stringify(message)); // Enviar el cuerpo del mensaje como un string
         });
 
