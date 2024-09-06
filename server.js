@@ -94,9 +94,10 @@ const onMessage = (message) => {
                 case 'send_routing':
                     switch (ALGORITHM) {
                         case 'flooding':
-                            flooding(jsonBody);
+                            flooding(from, to, jsonBody);
                             break;
                     }
+                    break;
                 case 'message':
                     switch (ALGORITHM) {
                         case 'dijkstra':
@@ -109,7 +110,7 @@ const onMessage = (message) => {
                             linkStateSend(jsonBody);
                             break;
                         case 'flooding':
-                            flooding(jsonBody);
+                            console.log(`Mensaje de ${jsonBody.from}: ${jsonBody.data}\n(Recibido desde el nodo ${from})`);
                             break;
                     }
 
