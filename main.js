@@ -51,7 +51,7 @@ const main = async () => {
                     while (repeat) {
                         await input("Ingrese el nombre del usuario destino (@alumchat.lol): ").then(async (destinationName) => {
                             const message = {
-                                type: "message",
+                                type: "send_routing",
                                 to: `${destinationName}@alumchat.lol`,
                                 from: `${name}@alumchat.lol`,
                                 data: await input("Ingrese el mensaje a enviar:"),

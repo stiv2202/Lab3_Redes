@@ -1,7 +1,7 @@
 const { initTable, input, readJsonFile, verifyName } = require('../utils.js')
 const { sendMessage } = require("../mediator.js");
 
-const flooding = async (from, to, message) => { // Se asume que el formato de message viene como un objeto
+const flooding = async (previousNodeName, currNodeName, message) => { // Se asume que el formato de message viene como un objeto
 
     const deleteResource = (jid) => {
         return jid.split('/')[0];
@@ -9,15 +9,15 @@ const flooding = async (from, to, message) => { // Se asume que el formato de me
 
 
     const names = (await readJsonFile("./names.json")).config
-    const name = deleteResource(to);
+    const currentNodeName = deleteResource(currNodeName);
 
     // Obtener nodo actual
-    const node = Object.keys(names).find(key => names[key] === to);
+    const currentNode = Object.keys(names).find(key => names[key] === currentNodeName);
 
-    console.log(`Nodo actual: ${node}`);
+    console.log(`Nodo actual: ${currentNode}`);
 
     // Verificar si este nodo es el destinatario final
-    if (name === message.to) {
+    if (currentNodeName === message.to) {
         console.log(`\nMensaje recibido de ${message.from}`);
         console.log(message);
         return;
@@ -29,10 +29,23 @@ const flooding = async (from, to, message) => { // Se asume que el formato de me
         return;
     }
 
-    let [_, neighbors] = await initTable(node);
+    
+    let [_, neighbors] = await initTable(currentNode);
+    
+    // Verificar si un vecino es el destinatario final
+    const destUserNode = Object.keys(names).find(key => names[key] === deleteResource(message.to));
+    if(destUserNode && neighbors.includes(destUserNode)) {
+        const msgCopy = {...message};
+        msgCopy.type = "message";
+        msgCopy.hops -= 1;
+        sendMessage(currentNodeName, msgCopy.to, JSON.stringify(msgCopy));
+        console.log("Enviamos el mensaje al destinatario final, nodo vecino ", destUserNode);
+        return;
+    }
+
+
 
     console.log(`Vecinos: ${neighbors}`)
-    console.log(`Names: ${names}`)
 
     // Función para enviar un mensaje a todos los vecinos
     const floodMessage = (message) => { 
@@ -40,12 +53,12 @@ const flooding = async (from, to, message) => { // Se asume que el formato de me
         neighbors.forEach(n => {
             if (message.hops <= 0) return;
             
-            if (names[n] === deleteResource(from)) {
+            if (names[n] === deleteResource(previousNodeName)) {
                 return;
             }
 
             message.hops -= 1;
-            sendMessage(name, names[n], JSON.stringify(message)); // Enviar el cuerpo del mensaje como un string
+            sendMessage(currentNodeName, names[n], JSON.stringify(message)); // Enviar el cuerpo del mensaje como un string
         });
 
     };
