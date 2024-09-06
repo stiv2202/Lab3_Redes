@@ -30,12 +30,14 @@ Configuración
 Define el algoritmo a utilizar en consts.js:
     
 ```javascript
-const ALGORITHM = 'distance-vector'; // 'distance-vector', 'link-state', 'flooding' o 'dijkstra'
+const ALGORITHM = 'distance-vector'; // 'distance-vector', 'flooding' o 'dijkstra'
 ```
 
 Configura la topología de la red en topo.json.
 
 Configura los nombres de los nodos en names.json.
+
+**NOTA:** Esto solo aplica para los algoritmos distance-vector, flooding y dijkstra.
 
 ## Ejecución
 Para iniciar el nodo, ejecuta el siguiente comando:
@@ -45,3 +47,9 @@ node main.js
 ```
 
 Se te pedirá que ingreses tu usuario y contraseña. Una vez autenticado, el nodo comenzará a ejecutar el algoritmo de enrutamiento seleccionado. Ojo: el usuario tienen que estar en la lista de usuarios en el archivo names.json.
+
+# Ejecución de link-state
+
+```bash
+node ./link_state/main.js
+```

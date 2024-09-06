@@ -7,7 +7,7 @@ class Graph {
    * @param config Objetc. La estructura de la topología debe ser { nodo: {vecino: peso} }
    */
 	constructor(config) {
-		console.log(config)
+		//console.log(config)
 		this.nodesTable = new Map();
 
 		for (let node in config) {
@@ -24,6 +24,8 @@ class Graph {
 				nodeRow.push({ node: neighbor, weight: nodeWeight });
 			}
 		}
+
+		//console.log("Tabla de adyacencia: ", this.nodesTable);
 	}
 
 	dijkstra(startNode) {
@@ -43,6 +45,8 @@ class Graph {
 		while (!priorityQueue.isEmpty()) {
 			let { node: minNode } = priorityQueue.poll();
 			let neighbors = this.nodesTable.get(minNode);
+
+			//console.log("NEIGHBORS: ", neighbors);
 
 			for (let neighbor of neighbors) {
 

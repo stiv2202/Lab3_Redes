@@ -1,4 +1,4 @@
-const { readJsonFile, getNeighbors } = require("./utils.js");
+const { readJsonFile, getNeighbors, getNode, getName } = require("./utils.js");
 const { input } = require("./utils.js");
 const { login, sendEchoMessage, sendWeightsTableToNeighbours, dijkstraSend } = require("./server.js");
 const { modifyNodeWeights } = require("./link-state/weightsTable.js");
@@ -6,19 +6,22 @@ const { setUser } = require("./enviroment.js");
 
 
 const updateNodeWeights = async (user) => {
-    const neighbors = await getNeighbors(user);
+
+		const node = await getNode(user);
+    const neighbors = await getNeighbors(node);
     const weights = {};
 
     for(let neighbor of neighbors) {
         try{
-            weights[neighbor] = await sendEchoMessage(user, neighbor);
+						const neighborUser = await getName(neighbor);
+            weights[neighbor] = await sendEchoMessage(user, neighborUser);
         } catch (error) {
             //console.log("Echo timeout con vecino: ", neighbor);
             weights[neighbor] = Infinity;
         }
     }
 
-    const version = modifyNodeWeights(user, weights);
+    const version = await modifyNodeWeights(user, weights);
     sendWeightsTableToNeighbours(weights, version, user); // Enviar tabla de pesos a los vecinos
 }
 
@@ -27,13 +30,6 @@ const main = async () => {
 	try {
 		let username = await input("Ingresa tu usuario de '@alumchat.lol': ");
 		let password = await input("Ingresa tu contraseña: ");
-
-		const names = (await readJsonFile("./topo_names.json")).config;
-
-		if (!names[username]) {
-			console.log("Usuario no encontrado.");
-			throw new Error("Nodo no válido");
-		}
 
 		await login(username, password);    
         setUser(username);

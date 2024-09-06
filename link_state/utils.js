@@ -74,7 +74,17 @@ const decodeHtmlEntities = (str) => {
 };
 
 const getNeighbors = async (node) => {
-    const topology = (await readJsonFile('topo_names.json')).config;
+    const topology = (await readJsonFile('topo.json')).config;
+    return topology[node];
+}
+
+const getNode = async (name) => {
+    const topology = (await readJsonFile('names.json')).config;
+    return Object.keys(topology).find(key => topology[key] === name);
+}
+
+const getName = async (node) => {
+    const topology = (await readJsonFile('names.json')).config;
     return topology[node];
 }
 
@@ -84,5 +94,7 @@ module.exports = {
     verifyName,
     getRandomNumber,
     decodeHtmlEntities,
-    getNeighbors
+    getNeighbors,
+    getNode,
+    getName,
 };
